@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Eye, EyeOff, Loader2, Phone, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const [whatsapp, setWhatsapp] = useState('');
@@ -31,57 +30,68 @@ export default function LoginPage() {
       router.push('/dashboard');
       router.refresh();
     } catch (err: any) {
-      setError('Kredensial tidak valid. Periksa nomor WA dan password.');
+      setError('AUTH_FAILED: CHECK_CREDENTIALS');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fdfdfd] px-4">
-      {/* Decorative Grid Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]" 
-           style={{ backgroundImage: 'radial-gradient(#0f172a 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+    <div className="min-h-screen bg-[#F5F5F0] flex flex-col md:flex-row overflow-hidden">
+      {/* Left: Giant Typography Side */}
+      <div className="hidden md:flex flex-1 relative bg-[#1A1A1A] text-[#F5F5F0] items-center justify-center p-20 overflow-hidden">
+        <div className="giant-text opacity-10 absolute -left-10 top-0 select-none">LOGIN</div>
+        <div className="giant-text opacity-10 absolute -right-20 bottom-0 select-none">ACCESS</div>
+        
+        <div className="relative z-10 space-y-4">
+          <h2 className="text-8xl font-black leading-none tracking-tighter uppercase italic">
+            Partner<br/>Portal
+          </h2>
+          <p className="font-sans text-lg font-light tracking-[0.2em] uppercase opacity-50">
+            // persiapantubel.bespoke
+          </p>
+        </div>
+      </div>
 
-      <div className="max-w-md w-full relative z-10">
-        <div className="mb-8 flex flex-col items-center">
-          <div className="b-badge mb-4 bg-blue-600 text-white border-none px-3 py-1">v1.0-STABLE</div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-            LOGIN_SYSTEM
-          </h1>
-          <p className="font-mono text-xs text-slate-400 mt-2">DASHBOARD_REFERRAL_PARTNER_V2</p>
+      {/* Right: Minimalist Form Side */}
+      <div className="flex-1 flex flex-col justify-center p-8 md:p-24 relative">
+        <div className="absolute top-10 right-10 flex items-center gap-4">
+          <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-30">EN / ID</span>
+          <div className="w-10 h-[1px] bg-black opacity-20"></div>
+          <span className="font-display text-sm font-black italic">PT.V2</span>
         </div>
 
-        <div className="b-card p-8 sm:p-10">
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block font-mono text-xs font-bold text-slate-500 uppercase mb-2 tracking-widest">
-                User_ID (WhatsApp)
+        <div className="max-w-sm w-full mx-auto space-y-12">
+          <header>
+            <h1 className="text-4xl font-black text-black leading-tight uppercase tracking-tighter">
+              Verify<br/>Identity
+            </h1>
+          </header>
+
+          <form onSubmit={handleLogin} className="space-y-8">
+            <div className="space-y-2 group">
+              <label className="font-sans text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4A373]">
+                01. WHATSAPP_ID
               </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <Phone size={16} />
-                </span>
-                <input
-                  type="text"
-                  placeholder="08123456789"
-                  className="b-input pl-10"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  required
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="08123456789"
+                className="w-full py-4 bg-transparent border-b-2 border-black/10 focus:border-black outline-none transition-all font-display text-2xl font-black"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                required
+              />
             </div>
 
-            <div>
-              <label className="block font-mono text-xs font-bold text-slate-500 uppercase mb-2 tracking-widest">
-                Security_Key (Password)
+            <div className="space-y-2 group">
+              <label className="font-sans text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4A373]">
+                02. PASS_KEY
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="b-input"
+                  className="w-full py-4 bg-transparent border-b-2 border-black/10 focus:border-black outline-none transition-all font-display text-2xl font-black"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -89,42 +99,40 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-900 transition-colors"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-black/20 hover:text-black transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="p-4 bg-red-50 border-2 border-red-600 text-red-600 font-mono text-xs font-bold">
-                [ERROR]: {error}
-              </div>
+              <p className="font-sans text-[10px] font-bold text-red-600 bg-red-50 p-2 uppercase tracking-widest">
+                [!] {error}
+              </p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="b-btn w-full group"
+              className="ed-btn w-full justify-between"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
               ) : (
                 <>
-                  Masuk Ke Dashboard
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  <span>Request_Access</span>
+                  <ArrowRight size={20} />
                 </>
               )}
             </button>
           </form>
-        </div>
 
-        <div className="mt-8 flex justify-between items-center font-mono text-[10px] text-slate-400 uppercase tracking-tighter">
-          <span>&copy; 2026 PERSIAPANTUBEL_INC</span>
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-            System_Online
-          </span>
+          <footer className="pt-10 border-t border-black/5">
+            <p className="font-sans text-[9px] text-black/30 leading-relaxed uppercase tracking-widest">
+              Secured access for authorized partners only. By entering, you agree to the transparency protocols of Persiapantubel Inc.
+            </p>
+          </footer>
         </div>
       </div>
     </div>

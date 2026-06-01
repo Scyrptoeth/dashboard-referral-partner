@@ -1,99 +1,83 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Space Grotesk", var(--font-geist-sans);
-  --font-mono: "JetBrains Mono", var(--font-geist-mono);
+  --font-display: "Syne", sans-serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
   
-  --color-brand-primary: #2563eb;
-  --color-brand-bg: #ffffff;
-  --color-brand-surface: #f8fafc;
-  --color-brand-border: #0f172a;
-  --color-brand-text: #0f172a;
+  --color-editorial-bg: #F5F5F0;
+  --color-editorial-ink: #1A1A1A;
+  --color-editorial-ochre: #D4A373;
 }
 
 :root {
-  --foreground-rgb: 15, 23, 42;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 26, 26, 26;
+  --background-start-rgb: 245, 245, 240;
 }
 
 body {
-  color: var(--color-brand-text);
-  background-color: var(--color-brand-bg);
-  font-feature-settings: "ss01", "ss02", "cv01";
+  color: var(--color-editorial-ink);
+  background-color: var(--color-editorial-bg);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
-/* Technical/Brutalist Utilities */
-@utility b-card {
-  background-color: white;
-  border: 2px solid var(--color-brand-border);
-  box-shadow: 4px 4px 0px 0px var(--color-brand-border);
-  transition: all 0.1s ease-in-out;
-  &:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px 0px var(--color-brand-border);
-  }
-}
-
-@utility b-btn {
-  background-color: var(--color-brand-border);
-  color: white;
-  font-family: var(--font-mono);
-  font-weight: 600;
+/* Editorial Typography */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-brand-border);
-  transition: all 0.1s ease-in-out;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+}
+
+/* Editorial Layout Utilities */
+@utility ed-card {
+  padding: 3rem;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility ed-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  &:hover {
-    background-color: white;
-    color: var(--color-brand-border);
-  }
-  &:active {
-    transform: translate(2px, 2px);
-    box-shadow: none;
-  }
-}
-
-@utility b-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background-color: white;
-  border: 2px solid var(--color-brand-border);
-  font-family: var(--font-mono);
-  outline: none;
-  transition: all 0.1s ease-in-out;
-  &:focus {
-    box-shadow: 4px 4px 0px 0px var(--color-brand-border);
-  }
-}
-
-@utility b-badge {
-  display: inline-flex;
-  padding: 0.25rem 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  padding: 1rem 2rem;
+  background-color: var(--color-editorial-ink);
+  color: var(--color-editorial-bg);
+  font-family: var(--font-display);
   font-weight: 700;
   text-transform: uppercase;
-  border: 1px solid var(--color-brand-border);
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: var(--color-editorial-ochre);
+    transform: translateY(-2px);
+  }
 }
 
-/* Custom scrollbar for Technical UI */
+@utility giant-text {
+  font-size: clamp(4rem, 15vw, 12rem);
+  line-height: 0.8;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.07em;
+}
+
+@utility vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* Custom scrollbar for Editorial UI */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: white;
-  border-left: 2px solid var(--color-brand-border);
+  background: var(--color-editorial-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-brand-border);
-  border: 2px solid white;
+  background: var(--color-editorial-ink);
 }

@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { Trophy, TrendingUp, DollarSign, History, Terminal, Zap } from 'lucide-react';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { ArrowDown } from 'lucide-react';
 
 export default async function PartnerDashboard() {
   const cookieStore = await cookies();
@@ -19,7 +19,6 @@ export default async function PartnerDashboard() {
 
   const { data: { session } } = await supabase.auth.getSession();
   
-  // Parallel fetching for performance
   const [myReferralsRes, leaderboardDataRes] = await Promise.all([
     supabase.from('referrals').select('*').eq('partner_id', session?.user.id).order('created_at', { ascending: false }),
     supabase.from('referrals').select('partner_id, profiles(full_name), amount')
@@ -29,12 +28,9 @@ export default async function PartnerDashboard() {
   const totalReferrals = myReferrals.length;
   const totalCommission = myReferrals.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
-  // Process leaderboard
   const grouped = (leaderboardDataRes.data || []).reduce((acc: any, curr: any) => {
     const id = curr.partner_id;
-    if (!acc[id]) {
-      acc[id] = { name: curr.profiles.full_name, total: 0 };
-    }
+    if (!acc[id]) acc[id] = { name: curr.profiles.full_name, total: 0 };
     acc[id].total += Number(curr.amount);
     return acc;
   }, {});
@@ -44,102 +40,98 @@ export default async function PartnerDashboard() {
     .slice(0, 5);
 
   return (
-    <div className="space-y-12">
-      <header>
-        <div className="flex items-center gap-2 mb-2">
-          <Zap size={14} className="text-amber-500 fill-amber-500" />
-          <span className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active_Node: Partner_Dashboard</span>
-        </div>
-        <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-          PARTNER_ENV
-        </h1>
-        <p className="font-mono text-xs text-slate-500 mt-4 uppercase tracking-tight">
-          Performance analytics and commission breakdown for the current period.
-        </p>
-      </header>
-
-      {/* Stats - Technical Brutalist */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { label: 'My_Total_Referrals', value: totalReferrals, icon: TrendingUp, dark: true },
-          { label: 'Earnings_Accumulated', value: formatCurrency(totalCommission), icon: DollarSign },
-          { label: 'Current_Rank', value: '#1', icon: Trophy },
-        ].map((stat, i) => (
-          <div key={i} className={cn(
-            "p-8 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)]",
-            stat.dark ? "bg-slate-900 text-white" : "bg-white text-slate-900"
-          )}>
-            <div className="flex items-center justify-between mb-8">
-              <span className={cn("font-mono text-[10px] font-bold uppercase tracking-widest", stat.dark ? "text-slate-400" : "text-slate-400")}>
-                {stat.label}
-              </span>
-              <stat.icon size={16} className={stat.dark ? "text-blue-400" : "text-blue-600"} />
-            </div>
-            <p className="text-3xl font-black tracking-tight font-mono uppercase">{stat.value}</p>
+    <div className="space-y-40">
+      {/* Editorial Header */}
+      <section className="flex flex-col md:flex-row justify-between items-start gap-10">
+        <div className="space-y-6">
+          <h1 className="giant-text italic tracking-tighter">PERFORMANCE</h1>
+          <div className="flex items-center gap-6">
+            <span className="w-12 h-12 rounded-full border border-black flex items-center justify-center animate-bounce">
+              <ArrowDown size={20} />
+            </span>
+            <p className="font-sans text-sm font-bold uppercase tracking-[0.3em] opacity-40">Scroll_To_Audit</p>
           </div>
-        ))}
-      </div>
+        </div>
+        
+        <div className="md:text-right space-y-4 max-w-sm">
+          <p className="font-sans text-lg leading-relaxed opacity-60">
+            A bespoke breakdown of your referral impact. We value transparency above all, ensuring every recruitment unit is accounted for in our real-time audit system.
+          </p>
+          <div className="b-badge border-black/10 text-[9px] px-3 py-1">GEN_TOKEN: {session?.user.id.slice(0, 8)}</div>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Leaderboard - Technical List */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="flex items-center gap-4">
-            <Trophy size={20} className="text-amber-500" />
-            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Top_Performers</h2>
+      {/* Main Metrics: High Asymmetry */}
+      <section className="relative grid grid-cols-1 lg:grid-cols-12 gap-0 border-y border-black/10">
+        <div className="lg:col-span-7 p-12 md:p-20 border-r border-black/10">
+          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-[#D4A373] mb-10 block">01. IMPACT_UNITS</span>
+          <div className="flex items-baseline gap-4">
+            <span className="giant-text leading-none">{totalReferrals}</span>
+            <span className="font-display text-4xl font-black uppercase opacity-10">RECRUITS</span>
+          </div>
+        </div>
+        
+        <div className="lg:col-span-5 p-12 md:p-20 bg-black text-[#F5F5F0]">
+          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] opacity-40 mb-10 block">02. TOTAL_YIELD</span>
+          <p className="text-6xl font-display font-black tracking-tighter leading-none">{formatCurrency(totalCommission)}</p>
+          <p className="mt-10 font-sans text-[10px] uppercase tracking-widest opacity-30 leading-loose">
+            Cumulative commission based on current active period. Includes 50% initial bonus protocols.
+          </p>
+        </div>
+      </section>
+
+      {/* Leaderboard & Logs */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-20">
+        <div className="lg:col-span-4 space-y-12">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-black italic tracking-tighter uppercase">Hall_Of_Fame</h2>
+            <div className="h-[2px] w-20 bg-[#D4A373]"></div>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-10">
             {sortedLeaderboard.map((item: any, idx) => (
-              <div key={idx} className="flex items-center justify-between p-4 border-2 border-slate-900 bg-white group hover:bg-slate-900 hover:text-white transition-all">
-                <div className="flex items-center gap-4">
-                  <span className="font-mono text-xs font-black w-6">0{idx + 1}</span>
-                  <p className="font-bold text-sm uppercase truncate max-w-[150px]">{item.name}</p>
+              <div key={idx} className="flex justify-between items-end border-b border-black/5 pb-6 group hover:border-black transition-colors">
+                <div className="space-y-1">
+                  <span className="font-mono text-[9px] font-bold opacity-30">RANK_0{idx + 1}</span>
+                  <p className="font-display text-xl font-black uppercase tracking-tight group-hover:text-[#D4A373] transition-colors">{item.name}</p>
                 </div>
-                <p className="font-mono text-xs font-bold text-blue-600 group-hover:text-blue-400">{formatCurrency(item.total)}</p>
+                <p className="font-sans text-xs font-bold opacity-40">{formatCurrency(item.total)}</p>
               </div>
             ))}
-            {sortedLeaderboard.length === 0 && (
-              <div className="p-8 border-2 border-dashed border-slate-300 text-center font-mono text-[10px] text-slate-400 uppercase">
-                Zero_Data_Buffer
-              </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-8 space-y-12">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-black italic tracking-tighter uppercase">Audit_Logs</h2>
+            <div className="h-[2px] w-20 bg-black"></div>
+          </div>
+
+          <div className="overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="font-sans text-[9px] font-bold uppercase tracking-widest opacity-30">
+                <tr>
+                  <th className="pb-8">SUBJECT_NAME</th>
+                  <th className="pb-8">TIMESTAMP</th>
+                  <th className="pb-8 text-right">CREDIT_VAL</th>
+                </tr>
+              </thead>
+              <tbody className="font-sans text-xs border-t border-black/10">
+                {myReferrals.map((ref) => (
+                  <tr key={ref.id} className="group hover:bg-black hover:text-[#F5F5F0] transition-all">
+                    <td className="py-8 font-black uppercase tracking-tight">{ref.pendaftar_name}</td>
+                    <td className="py-8 opacity-40 uppercase">{formatDate(ref.created_at)}</td>
+                    <td className="py-8 text-right font-display font-black text-lg">{formatCurrency(ref.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {myReferrals.length === 0 && (
+              <p className="py-20 text-center font-display text-sm font-black uppercase opacity-20 italic">No_Activity_Detected_In_Buffer</p>
             )}
           </div>
         </div>
-
-        {/* History - Technical Table */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="flex items-center gap-4">
-            <Terminal size={20} className="text-slate-900" />
-            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Referral_History</h2>
-          </div>
-
-          <div className="border-2 border-slate-900 overflow-hidden bg-white shadow-[6px_6px_0px_0px_rgba(15,23,42,1)]">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-900 text-white font-mono text-[10px] uppercase tracking-widest">
-                  <th className="p-4 border-r border-slate-800">Student_Name</th>
-                  <th className="p-4 border-r border-slate-800">Timestamp</th>
-                  <th className="p-4 text-right">Credit</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-xs">
-                {myReferrals.map((ref) => (
-                  <tr key={ref.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-bold text-slate-900 uppercase">{ref.pendaftar_name}</td>
-                    <td className="p-4 text-slate-500">{formatDate(ref.created_at)}</td>
-                    <td className="p-4 text-right font-black text-green-600">{formatCurrency(ref.amount)}</td>
-                  </tr>
-                ))}
-                {myReferrals.length === 0 && (
-                  <tr>
-                    <td colSpan={3} className="p-12 text-center text-slate-300 italic">No historical data records found.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

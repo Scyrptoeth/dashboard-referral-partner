@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { Terminal, Users, TrendingUp, DollarSign, Clock, MessageSquare, ArrowRight } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { ArrowUpRight, Plus } from 'lucide-react';
 
 export default async function DeveloperDashboard() {
   const cookieStore = await cookies();
@@ -17,7 +17,6 @@ export default async function DeveloperDashboard() {
     }
   );
 
-  // Parallel stats fetching
   const [partnerRes, referralsRes, pendingRes] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'partner'),
     supabase.from('referrals').select('amount'),
@@ -30,91 +29,84 @@ export default async function DeveloperDashboard() {
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
   return (
-    <div className="space-y-12">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-            <span className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">System_Status: Operational</span>
-          </div>
-          <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-            DEV_OVERVIEW
+    <div className="space-y-32">
+      {/* Hero: Oversized Typography */}
+      <section className="relative">
+        <div className="space-y-4">
+          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-[#D4A373]">
+            System_Metric_Report
+          </span>
+          <h1 className="giant-text tracking-tighter italic">
+            OVERVIEW
           </h1>
-          <p className="font-mono text-xs text-slate-500 mt-4 max-w-md uppercase tracking-tight">
-            Monitoring real-time performance metrics and partner ecosystem activities.
-          </p>
         </div>
-        <div className="font-mono text-[10px] text-slate-300 text-right hidden md:block uppercase">
-          Build: 2026.06.01_v1.0<br />
-          Ref: apnilwlirfjqmkjepkzc
-        </div>
-      </header>
-
-      {/* Stats Grid - Technical Brutalist */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 border-2 border-slate-900 bg-slate-900 overflow-hidden shadow-[8px_8px_0px_0px_rgba(15,23,42,1)]">
-        {[
-          { label: 'Total_Partners', value: partnerCount, icon: Users, color: 'text-blue-500' },
-          { label: 'Referral_Count', value: totalReferrals, icon: TrendingUp, color: 'text-green-500' },
-          { label: 'Accumulated_Commission', value: formatCurrency(totalCommission), icon: DollarSign, color: 'text-amber-500' },
-          { label: 'Pending_Payouts', value: formatCurrency(totalPending), icon: Clock, color: 'text-red-500' },
-        ].map((stat, i) => (
-          <div key={i} className="bg-white p-8 border-[0.5px] border-slate-900 group">
-            <div className="flex items-center justify-between mb-8">
-              <span className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
-              <stat.icon size={16} className={stat.color} />
-            </div>
-            <p className="text-3xl font-black text-slate-900 tracking-tight font-mono">{stat.value}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Quick Actions */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Terminal size={20} className="text-slate-900" />
-            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">System_Commands</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {[
-              { label: 'Add_Referral_Manual', action: 'Execute_Input', icon: ArrowRight },
-              { label: 'Register_New_Partner', action: 'Create_User', icon: ArrowRight },
-              { label: 'Reset_Leaderboard', action: 'Archive_Period', icon: ArrowRight, danger: true },
-            ].map((cmd, i) => (
-              <button 
-                key={i}
-                className={`w-full flex items-center justify-between p-5 border-2 transition-all group ${
-                  cmd.danger 
-                  ? 'border-red-600 bg-red-50 hover:bg-red-600 hover:text-white' 
-                  : 'border-slate-900 bg-white hover:bg-slate-900 hover:text-white'
-                }`}
-              >
-                <div className="text-left">
-                  <p className="font-mono text-[10px] font-bold uppercase opacity-50 tracking-widest">{cmd.label}</p>
-                  <p className="font-black uppercase tracking-tight">{cmd.action}</p>
-                </div>
-                <cmd.icon size={20} className="group-hover:translate-x-1 transition-transform" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 mt-20 gap-20">
+          <div className="space-y-8">
+            <p className="font-sans text-xl leading-relaxed text-black/60 max-w-md">
+              Real-time monitoring of the referral ecosystem. Tracking growth across <span className="text-black font-bold">{partnerCount} active partners</span> with a high-transparency protocol.
+            </p>
+            <div className="flex gap-4">
+              <button className="ed-btn gap-3">
+                <span>Add_Entry</span>
+                <Plus size={18} />
               </button>
-            ))}
+              <button className="px-8 py-4 border-2 border-black font-display text-sm font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+                Registry
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex flex-col justify-end items-end gap-2 text-right">
+            <span className="font-sans text-[9px] font-bold uppercase tracking-widest opacity-30">Server_Hash</span>
+            <code className="font-mono text-[10px] opacity-40">apnilwlirfjqmkjepkzc.v2</code>
+          </div>
+        </div>
+      </section>
+
+      {/* Grid: Asymmetric Metrics */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-1 border-t border-black/10 pt-20">
+        <div className="lg:col-span-8 ed-card border-none flex flex-col justify-between group">
+          <div className="flex justify-between items-start">
+            <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-40">Total_Referral_Volume</span>
+            <ArrowUpRight className="opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <div className="mt-20">
+            <span className="giant-text text-black">{totalReferrals}</span>
+            <span className="font-display text-2xl font-black uppercase ml-4 opacity-20">Units</span>
           </div>
         </div>
 
-        {/* Feedback / Logs */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="flex items-center gap-4 mb-4">
-            <MessageSquare size={20} className="text-slate-900" />
-            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Incoming_Logs</h2>
+        <div className="lg:col-span-4 ed-card border-l border-black/10 flex flex-col justify-between bg-black text-[#F5F5F0]">
+          <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-40">Financial_Liquidity</span>
+          <div className="mt-20">
+            <p className="font-sans text-xs uppercase tracking-widest opacity-50 mb-4">Commission_Pool</p>
+            <p className="text-4xl font-display font-black tracking-tighter">{formatCurrency(totalCommission)}</p>
           </div>
-          
-          <div className="b-card bg-slate-50 border-dashed min-h-[300px] flex flex-col items-center justify-center text-center p-12">
-            <Terminal size={48} className="text-slate-200 mb-6" />
-            <p className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest">
-              [SYSTEM_MESSAGE]: No recent activity logs found in the feedback buffer.
+        </div>
+
+        <div className="lg:col-span-12 ed-card flex flex-col md:flex-row justify-between items-end gap-10 mt-10">
+          <div className="space-y-4">
+            <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-40">Payout_Liability</span>
+            <h3 className="text-7xl font-display font-black tracking-tighter uppercase italic">{formatCurrency(totalPending)}</h3>
+          </div>
+          <div className="max-w-xs text-right">
+            <p className="font-sans text-[10px] leading-relaxed uppercase tracking-widest opacity-40">
+              Pending confirmation for the current period. All rewards are calculated based on the 3-referral threshold rule.
             </p>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Footer Branding */}
+      <footer className="pt-20 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-10 opacity-30">
+        <span className="font-display text-sm font-black uppercase tracking-[0.5em]">Persiapantubel // 2026</span>
+        <div className="flex gap-8 font-sans text-[9px] font-bold uppercase tracking-widest">
+          <span>Privacy_Protocol</span>
+          <span>Security_Audit</span>
+          <span>Terms_Of_Access</span>
+        </div>
+      </footer>
     </div>
   );
 }

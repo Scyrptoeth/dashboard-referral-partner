@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Referral Partner Dashboard | Persiapantubel",
-  description: "Dashboard transparan kinerja Partner Persiapantubel",
+  title: "Editorial Dashboard // Persiapantubel",
+  description: "Bespoke transparency system for Persiapantubel Partners",
 };
 
 export default function RootLayout({
@@ -25,9 +25,9 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased font-sans`}
+      className={`${syne.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col selection:bg-blue-600 selection:text-white">
+      <body className="min-h-full flex flex-col selection:bg-black selection:text-[#F5F5F0]">
         {children}
       </body>
     </html>
