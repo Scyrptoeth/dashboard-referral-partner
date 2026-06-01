@@ -108,11 +108,9 @@ export default async function DeveloperDashboard() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="heading-2 text-[#1C1C1A]">Tindakan Cepat</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <DeveloperActions partners={partnersData} />
-          <div className="mt-6">
-            <RewardConfigEditor configs={rewardConfigsRes.data || []} />
-          </div>
+          <RewardConfigEditor configs={rewardConfigsRes.data || []} />
         </div>
       </section>
     </div>

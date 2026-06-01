@@ -56,10 +56,20 @@ export async function middleware(request: NextRequest) {
 
   const { data: { session } } = await supabase.auth.getSession();
 
+  const role = session?.user?.user_metadata?.role;
+
   // Protected routes: /dashboard
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // Role-based authorization
+    if (request.nextUrl.pathname.startsWith('/dashboard/developer') && role !== 'developer') {
+      return NextResponse.redirect(new URL('/dashboard/partner', request.url));
+    }
+    if (request.nextUrl.pathname.startsWith('/dashboard/partner') && role === 'developer') {
+      return NextResponse.redirect(new URL('/dashboard/developer', request.url));
     }
   }
 

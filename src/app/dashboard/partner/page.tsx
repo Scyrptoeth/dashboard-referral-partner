@@ -21,7 +21,10 @@ export default async function PartnerDashboard() {
   
   const [myReferralsRes, leaderboardDataRes] = await Promise.all([
     supabase.from('referrals').select('*').eq('partner_id', session?.user.id).order('created_at', { ascending: false }),
-    supabase.from('referrals').select('partner_id, profiles(full_name), amount').neq('status', 'settled')
+    supabase.from('referrals')
+      .select('partner_id, profiles(full_name), amount, created_at')
+      .neq('status', 'settled')
+      .order('created_at', { ascending: true })
   ]);
 
   const allReferrals = myReferralsRes.data || [];
@@ -33,19 +36,32 @@ export default async function PartnerDashboard() {
   type LeaderboardItem = {
     name: string;
     total: number;
+    referrals: any[];
   };
 
+  // Group by partner
   const grouped = (leaderboardDataRes.data || []).reduce((acc: Record<string, LeaderboardItem>, curr) => {
     const id = curr.partner_id;
     const profile = Array.isArray(curr.profiles) ? curr.profiles[0] : curr.profiles;
     const name = profile?.full_name || 'Partner';
     
-    if (!acc[id]) acc[id] = { name, total: 0 };
-    acc[id].total += Number(curr.amount);
+    if (!acc[id]) acc[id] = { name, total: 0, referrals: [] };
+    acc[id].referrals.push(curr);
     return acc;
   }, {});
 
-  const sortedLeaderboard = Object.values(grouped)
+  // Calculate Reward Basis (Total - first 3)
+  const leaderboardItems = Object.values(grouped).map(item => {
+    // Referrals sudah diurutkan ascending oleh query
+    const rewardReferrals = item.referrals.slice(3);
+    const rewardTotal = rewardReferrals.reduce((sum, r) => sum + Number(r.amount), 0);
+    return {
+      name: item.name,
+      total: rewardTotal
+    };
+  });
+
+  const sortedLeaderboard = leaderboardItems
     .sort((a, b) => b.total - a.total)
     .slice(0, 7);
 

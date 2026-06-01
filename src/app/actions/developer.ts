@@ -73,6 +73,7 @@ export async function registerPartner(formData: FormData) {
     email,
     password,
     email_confirm: true,
+    user_metadata: { role: 'partner' }
   });
 
   if (authError) {

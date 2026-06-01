@@ -53,28 +53,26 @@ export default function DeveloperActions({ partners }: { partners: Partner[] }) 
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <button 
-          onClick={() => referralDialogRef.current?.showModal()}
-          className="h-card text-left group hover:border-[#1C1C1A] transition-colors"
-        >
-          <h3 className="font-medium text-[#1C1C1A] mb-2">Tambah Rujukan Manual</h3>
-          <p className="text-sm text-[#738276] mb-6">Input data pendaftar baru dari mitra yang tidak terdaftar otomatis.</p>
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
-            <Plus size={16} />
-          </span>
-        </button>
-        <button 
-          onClick={() => partnerDialogRef.current?.showModal()}
-          className="h-card text-left group hover:border-[#1C1C1A] transition-colors"
-        >
-          <h3 className="font-medium text-[#1C1C1A] mb-2">Daftarkan Mitra</h3>
-          <p className="text-sm text-[#738276] mb-6">Buat akun akses untuk mitra baru ke dalam sistem dashboard.</p>
-          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
-            <Plus size={16} />
-          </span>
-        </button>
-      </div>
+      <button 
+        onClick={() => referralDialogRef.current?.showModal()}
+        className="h-card text-left group hover:border-[#1C1C1A] transition-colors"
+      >
+        <h3 className="font-medium text-[#1C1C1A] mb-2">Tambah Rujukan Manual</h3>
+        <p className="text-sm text-[#738276] mb-6">Input data pendaftar baru dari mitra yang tidak terdaftar otomatis.</p>
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
+          <Plus size={16} />
+        </span>
+      </button>
+      <button 
+        onClick={() => partnerDialogRef.current?.showModal()}
+        className="h-card text-left group hover:border-[#1C1C1A] transition-colors"
+      >
+        <h3 className="font-medium text-[#1C1C1A] mb-2">Daftarkan Mitra</h3>
+        <p className="text-sm text-[#738276] mb-6">Buat akun akses untuk mitra baru ke dalam sistem dashboard.</p>
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
+          <Plus size={16} />
+        </span>
+      </button>
 
       {/* Tambah Rujukan Modal */}
       <dialog ref={referralDialogRef} className="p-0 rounded-2xl bg-white backdrop:bg-black/50 w-full max-w-md m-auto border border-[#E8E8E4] shadow-xl">
