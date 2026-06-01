@@ -27,15 +27,23 @@ export default async function PartnerDashboard() {
   const totalReferrals = myReferrals.length;
   const totalCommission = myReferrals.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
-  const grouped = (leaderboardDataRes.data || []).reduce((acc: any, curr: any) => {
+  type LeaderboardItem = {
+    name: string;
+    total: number;
+  };
+
+  const grouped = (leaderboardDataRes.data || []).reduce((acc: Record<string, LeaderboardItem>, curr) => {
     const id = curr.partner_id;
-    if (!acc[id]) acc[id] = { name: curr.profiles.full_name, total: 0 };
+    const profile = Array.isArray(curr.profiles) ? curr.profiles[0] : curr.profiles;
+    const name = profile?.full_name || 'Partner';
+    
+    if (!acc[id]) acc[id] = { name, total: 0 };
     acc[id].total += Number(curr.amount);
     return acc;
   }, {});
 
   const sortedLeaderboard = Object.values(grouped)
-    .sort((a: any, b: any) => b.total - a.total)
+    .sort((a, b) => b.total - a.total)
     .slice(0, 7);
 
   return (
@@ -72,7 +80,7 @@ export default async function PartnerDashboard() {
           <p className="text-sm text-[#738276] mb-8">7 mitra dengan kontribusi tertinggi di periode ini.</p>
           
           <div className="space-y-6">
-            {sortedLeaderboard.map((item: any, idx) => (
+            {sortedLeaderboard.map((item, idx) => (
               <div key={idx} className="flex justify-between items-center border-b border-[#E8E8E4] pb-4">
                 <div className="flex items-center gap-6">
                   <span className="font-serif text-lg text-[#1C1C1A] opacity-50">0{idx + 1}</span>

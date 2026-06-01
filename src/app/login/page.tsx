@@ -20,7 +20,7 @@ export default function LoginPage() {
 
     try {
       const email = `${whatsapp}@persiapantubel.com`;
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -29,7 +29,8 @@ export default function LoginPage() {
 
       router.push('/dashboard');
       router.refresh();
-    } catch (err: any) {
+    } catch (err) {
+      console.error('Login error:', err);
       setError('Informasi login tidak sesuai. Silakan periksa kembali.');
     } finally {
       setLoading(false);

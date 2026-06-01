@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { formatCurrency } from '@/lib/utils';
-import { Plus } from 'lucide-react';
+import DeveloperActions from '@/components/DeveloperActions';
 
 export default async function DeveloperDashboard() {
   const cookieStore = await cookies();
@@ -18,12 +18,13 @@ export default async function DeveloperDashboard() {
   );
 
   const [partnerRes, referralsRes, pendingRes] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'partner'),
+    supabase.from('profiles').select('*', { count: 'exact' }).eq('role', 'partner'),
     supabase.from('referrals').select('amount'),
     supabase.from('payments').select('amount').eq('status', 'pending')
   ]);
 
   const partnerCount = partnerRes.count || 0;
+  const partnersData = partnerRes.data || [];
   const totalReferrals = referralsRes.data?.length || 0;
   const totalCommission = referralsRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
@@ -70,22 +71,7 @@ export default async function DeveloperDashboard() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="heading-2 text-[#1C1C1A]">Tindakan Cepat</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <button className="h-card text-left group hover:border-[#1C1C1A] transition-colors">
-            <h3 className="font-medium text-[#1C1C1A] mb-2">Tambah Rujukan Manual</h3>
-            <p className="text-sm text-[#738276] mb-6">Input data pendaftar baru dari mitra yang tidak terdaftar otomatis.</p>
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
-              <Plus size={16} />
-            </span>
-          </button>
-          <button className="h-card text-left group hover:border-[#1C1C1A] transition-colors">
-            <h3 className="font-medium text-[#1C1C1A] mb-2">Daftarkan Mitra</h3>
-            <p className="text-sm text-[#738276] mb-6">Buat akun akses untuk mitra baru ke dalam sistem dashboard.</p>
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
-              <Plus size={16} />
-            </span>
-          </button>
-        </div>
+        <DeveloperActions partners={partnersData} />
       </section>
     </div>
   );
