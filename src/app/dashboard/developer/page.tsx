@@ -1,10 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { Users, TrendingUp, DollarSign, Clock } from 'lucide-react';
+import { Users, TrendingUp, DollarSign, Clock, MessageSquare } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 export default async function DeveloperDashboard() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

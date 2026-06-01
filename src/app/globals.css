@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
 
 :root {
   --foreground-rgb: 15, 23, 42;
@@ -18,14 +21,31 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-@layer components {
-  .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition-all active:scale-[0.98];
+@utility btn-primary {
+  background-color: var(--color-blue-600);
+  color: white;
+  font-weight: 600;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 0.75rem;
+  transition-property: all;
+  &:hover {
+    background-color: var(--color-blue-700);
   }
-  
-  .card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-sm p-6;
+  &:active {
+    scale: 0.98;
   }
+}
+
+@utility card {
+  background-color: white;
+  border-radius: 1rem;
+  border-width: 1px;
+  border-color: var(--color-slate-200);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
 }
 
 /* Custom scrollbar for better UI */
@@ -35,9 +55,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+  background: var(--color-slate-200);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-slate-300);
 }

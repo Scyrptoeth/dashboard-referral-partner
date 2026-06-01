@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { LayoutDashboard, Users, CreditCard, MessageSquare, Settings, LogOut } from 'lucide-react';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
