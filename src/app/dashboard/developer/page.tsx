@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { formatCurrency } from '@/lib/utils';
-import { ArrowUpRight, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default async function DeveloperDashboard() {
   const cookieStore = await cookies();
@@ -29,84 +29,64 @@ export default async function DeveloperDashboard() {
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
   return (
-    <div className="space-y-32">
-      {/* Hero: Oversized Typography */}
-      <section className="relative">
-        <div className="space-y-4">
-          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-[#D4A373]">
-            System_Metric_Report
-          </span>
-          <h1 className="giant-text tracking-tighter italic">
-            OVERVIEW
-          </h1>
+    <div className="space-y-24">
+      <header className="max-w-2xl">
+        <h1 className="heading-1 text-[#1C1C1A] mb-6">Tinjauan Kinerja</h1>
+        <p className="text-lg text-[#738276] leading-relaxed">
+          Pantau pertumbuhan ekosistem kemitraan. Saat ini terdapat <span className="text-[#1C1C1A] font-medium">{partnerCount} mitra aktif</span> yang berkontribusi pada jaringan Persiapantubel.
+        </p>
+      </header>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-[#E8E8E4] pt-16">
+        <div>
+          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Total Rujukan</p>
+          <div className="flex items-baseline gap-3">
+            <span className="font-serif text-6xl text-[#1C1C1A]">{totalReferrals}</span>
+            <span className="text-sm text-[#4A4A48]">siswa</span>
+          </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 mt-20 gap-20">
-          <div className="space-y-8">
-            <p className="font-sans text-xl leading-relaxed text-black/60 max-w-md">
-              Real-time monitoring of the referral ecosystem. Tracking growth across <span className="text-black font-bold">{partnerCount} active partners</span> with a high-transparency protocol.
-            </p>
-            <div className="flex gap-4">
-              <button className="ed-btn gap-3">
-                <span>Add_Entry</span>
-                <Plus size={18} />
-              </button>
-              <button className="px-8 py-4 border-2 border-black font-display text-sm font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
-                Registry
-              </button>
+
+        <div>
+          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Dana Terkumpul</p>
+          <div className="flex items-baseline gap-3">
+            <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">{formatCurrency(totalCommission)}</span>
+          </div>
+        </div>
+
+        <div className="md:col-span-2 mt-8">
+          <div className="h-card bg-[#F5F5F2] border-none flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8">
+            <div>
+              <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-3">Tertunda (Menunggu Pembayaran)</p>
+              <h3 className="font-serif text-4xl text-[#B94A48]">{formatCurrency(totalPending)}</h3>
             </div>
-          </div>
-          
-          <div className="flex flex-col justify-end items-end gap-2 text-right">
-            <span className="font-sans text-[9px] font-bold uppercase tracking-widest opacity-30">Server_Hash</span>
-            <code className="font-mono text-[10px] opacity-40">apnilwlirfjqmkjepkzc.v2</code>
+            <button className="h-btn">
+              Kelola Pencairan
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Grid: Asymmetric Metrics */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-1 border-t border-black/10 pt-20">
-        <div className="lg:col-span-8 ed-card border-none flex flex-col justify-between group">
-          <div className="flex justify-between items-start">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-40">Total_Referral_Volume</span>
-            <ArrowUpRight className="opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-          <div className="mt-20">
-            <span className="giant-text text-black">{totalReferrals}</span>
-            <span className="font-display text-2xl font-black uppercase ml-4 opacity-20">Units</span>
-          </div>
+      <section className="border-t border-[#E8E8E4] pt-16">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="heading-2 text-[#1C1C1A]">Tindakan Cepat</h2>
         </div>
-
-        <div className="lg:col-span-4 ed-card border-l border-black/10 flex flex-col justify-between bg-black text-[#F5F5F0]">
-          <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-40">Financial_Liquidity</span>
-          <div className="mt-20">
-            <p className="font-sans text-xs uppercase tracking-widest opacity-50 mb-4">Commission_Pool</p>
-            <p className="text-4xl font-display font-black tracking-tighter">{formatCurrency(totalCommission)}</p>
-          </div>
-        </div>
-
-        <div className="lg:col-span-12 ed-card flex flex-col md:flex-row justify-between items-end gap-10 mt-10">
-          <div className="space-y-4">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-widest opacity-40">Payout_Liability</span>
-            <h3 className="text-7xl font-display font-black tracking-tighter uppercase italic">{formatCurrency(totalPending)}</h3>
-          </div>
-          <div className="max-w-xs text-right">
-            <p className="font-sans text-[10px] leading-relaxed uppercase tracking-widest opacity-40">
-              Pending confirmation for the current period. All rewards are calculated based on the 3-referral threshold rule.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <button className="h-card text-left group hover:border-[#1C1C1A] transition-colors">
+            <h3 className="font-medium text-[#1C1C1A] mb-2">Tambah Rujukan Manual</h3>
+            <p className="text-sm text-[#738276] mb-6">Input data pendaftar baru dari mitra yang tidak terdaftar otomatis.</p>
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
+              <Plus size={16} />
+            </span>
+          </button>
+          <button className="h-card text-left group hover:border-[#1C1C1A] transition-colors">
+            <h3 className="font-medium text-[#1C1C1A] mb-2">Daftarkan Mitra</h3>
+            <p className="text-sm text-[#738276] mb-6">Buat akun akses untuk mitra baru ke dalam sistem dashboard.</p>
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F5F5F2] group-hover:bg-[#1C1C1A] group-hover:text-white transition-colors">
+              <Plus size={16} />
+            </span>
+          </button>
         </div>
       </section>
-
-      {/* Footer Branding */}
-      <footer className="pt-20 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-10 opacity-30">
-        <span className="font-display text-sm font-black uppercase tracking-[0.5em]">Persiapantubel // 2026</span>
-        <div className="flex gap-8 font-sans text-[9px] font-bold uppercase tracking-widest">
-          <span>Privacy_Protocol</span>
-          <span>Security_Audit</span>
-          <span>Terms_Of_Access</span>
-        </div>
-      </footer>
     </div>
   );
 }

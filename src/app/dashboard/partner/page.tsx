@@ -1,7 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { formatCurrency, formatDate, cn } from '@/lib/utils';
-import { ArrowDown } from 'lucide-react';
+import { formatCurrency, formatDate } from '@/lib/utils';
 
 export default async function PartnerDashboard() {
   const cookieStore = await cookies();
@@ -37,98 +36,84 @@ export default async function PartnerDashboard() {
 
   const sortedLeaderboard = Object.values(grouped)
     .sort((a: any, b: any) => b.total - a.total)
-    .slice(0, 5);
+    .slice(0, 7);
 
   return (
-    <div className="space-y-40">
-      {/* Editorial Header */}
-      <section className="flex flex-col md:flex-row justify-between items-start gap-10">
-        <div className="space-y-6">
-          <h1 className="giant-text italic tracking-tighter">PERFORMANCE</h1>
-          <div className="flex items-center gap-6">
-            <span className="w-12 h-12 rounded-full border border-black flex items-center justify-center animate-bounce">
-              <ArrowDown size={20} />
-            </span>
-            <p className="font-sans text-sm font-bold uppercase tracking-[0.3em] opacity-40">Scroll_To_Audit</p>
-          </div>
-        </div>
-        
-        <div className="md:text-right space-y-4 max-w-sm">
-          <p className="font-sans text-lg leading-relaxed opacity-60">
-            A bespoke breakdown of your referral impact. We value transparency above all, ensuring every recruitment unit is accounted for in our real-time audit system.
-          </p>
-          <div className="b-badge border-black/10 text-[9px] px-3 py-1">GEN_TOKEN: {session?.user.id.slice(0, 8)}</div>
-        </div>
-      </section>
+    <div className="space-y-24">
+      <header className="max-w-3xl">
+        <h1 className="heading-1 text-[#1C1C1A] mb-6">Pencapaian Anda</h1>
+        <p className="text-lg text-[#738276] leading-relaxed">
+          Terima kasih atas kontribusi Anda. Di bawah ini adalah rincian transparan mengenai rujukan dan komisi yang telah Anda hasilkan.
+        </p>
+      </header>
 
-      {/* Main Metrics: High Asymmetry */}
-      <section className="relative grid grid-cols-1 lg:grid-cols-12 gap-0 border-y border-black/10">
-        <div className="lg:col-span-7 p-12 md:p-20 border-r border-black/10">
-          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] text-[#D4A373] mb-10 block">01. IMPACT_UNITS</span>
-          <div className="flex items-baseline gap-4">
-            <span className="giant-text leading-none">{totalReferrals}</span>
-            <span className="font-display text-4xl font-black uppercase opacity-10">RECRUITS</span>
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-16 border-t border-[#E8E8E4] pt-16">
+        <div>
+          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Total Rujukan</p>
+          <div className="flex items-baseline gap-3">
+            <span className="font-serif text-7xl text-[#1C1C1A]">{totalReferrals}</span>
           </div>
         </div>
-        
-        <div className="lg:col-span-5 p-12 md:p-20 bg-black text-[#F5F5F0]">
-          <span className="font-sans text-[10px] font-bold uppercase tracking-[0.4em] opacity-40 mb-10 block">02. TOTAL_YIELD</span>
-          <p className="text-6xl font-display font-black tracking-tighter leading-none">{formatCurrency(totalCommission)}</p>
-          <p className="mt-10 font-sans text-[10px] uppercase tracking-widest opacity-30 leading-loose">
-            Cumulative commission based on current active period. Includes 50% initial bonus protocols.
+
+        <div>
+          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Estimasi Pendapatan</p>
+          <div className="flex items-baseline gap-3">
+            <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">{formatCurrency(totalCommission)}</span>
+          </div>
+          <p className="text-sm text-[#738276] mt-4 leading-relaxed max-w-xs">
+            Sudah termasuk penyesuaian khusus untuk 3 rujukan pertama.
           </p>
         </div>
       </section>
 
-      {/* Leaderboard & Logs */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-20">
-        <div className="lg:col-span-4 space-y-12">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-black italic tracking-tighter uppercase">Hall_Of_Fame</h2>
-            <div className="h-[2px] w-20 bg-[#D4A373]"></div>
-          </div>
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-[#E8E8E4] pt-16">
+        <div className="lg:col-span-5 space-y-8">
+          <h2 className="heading-2 text-[#1C1C1A]">Papan Peringkat</h2>
+          <p className="text-sm text-[#738276] mb-8">7 mitra dengan kontribusi tertinggi di periode ini.</p>
           
-          <div className="space-y-10">
+          <div className="space-y-6">
             {sortedLeaderboard.map((item: any, idx) => (
-              <div key={idx} className="flex justify-between items-end border-b border-black/5 pb-6 group hover:border-black transition-colors">
-                <div className="space-y-1">
-                  <span className="font-mono text-[9px] font-bold opacity-30">RANK_0{idx + 1}</span>
-                  <p className="font-display text-xl font-black uppercase tracking-tight group-hover:text-[#D4A373] transition-colors">{item.name}</p>
+              <div key={idx} className="flex justify-between items-center border-b border-[#E8E8E4] pb-4">
+                <div className="flex items-center gap-6">
+                  <span className="font-serif text-lg text-[#1C1C1A] opacity-50">0{idx + 1}</span>
+                  <p className="font-medium text-[#1C1C1A]">{item.name}</p>
                 </div>
-                <p className="font-sans text-xs font-bold opacity-40">{formatCurrency(item.total)}</p>
+                <p className="font-medium text-[#738276]">{formatCurrency(item.total)}</p>
               </div>
             ))}
+            {sortedLeaderboard.length === 0 && (
+              <p className="text-sm text-[#738276] italic">Belum ada data tersedia.</p>
+            )}
           </div>
         </div>
 
-        <div className="lg:col-span-8 space-y-12">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-black italic tracking-tighter uppercase">Audit_Logs</h2>
-            <div className="h-[2px] w-20 bg-black"></div>
-          </div>
-
-          <div className="overflow-hidden">
+        <div className="lg:col-span-7 space-y-8">
+          <h2 className="heading-2 text-[#1C1C1A]">Riwayat Aktivitas</h2>
+          
+          <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="font-sans text-[9px] font-bold uppercase tracking-widest opacity-30">
+              <thead className="border-b border-[#E8E8E4]">
                 <tr>
-                  <th className="pb-8">SUBJECT_NAME</th>
-                  <th className="pb-8">TIMESTAMP</th>
-                  <th className="pb-8 text-right">CREDIT_VAL</th>
+                  <th className="pb-4 text-xs font-medium text-[#738276] uppercase tracking-widest">Nama Pendaftar</th>
+                  <th className="pb-4 text-xs font-medium text-[#738276] uppercase tracking-widest">Tanggal</th>
+                  <th className="pb-4 text-xs font-medium text-[#738276] uppercase tracking-widest text-right">Nilai</th>
                 </tr>
               </thead>
-              <tbody className="font-sans text-xs border-t border-black/10">
+              <tbody className="divide-y divide-[#E8E8E4]/50">
                 {myReferrals.map((ref) => (
-                  <tr key={ref.id} className="group hover:bg-black hover:text-[#F5F5F0] transition-all">
-                    <td className="py-8 font-black uppercase tracking-tight">{ref.pendaftar_name}</td>
-                    <td className="py-8 opacity-40 uppercase">{formatDate(ref.created_at)}</td>
-                    <td className="py-8 text-right font-display font-black text-lg">{formatCurrency(ref.amount)}</td>
+                  <tr key={ref.id} className="group hover:bg-[#F5F5F2] transition-colors">
+                    <td className="py-5 px-2 font-medium text-[#1C1C1A]">{ref.pendaftar_name}</td>
+                    <td className="py-5 px-2 text-sm text-[#738276]">{formatDate(ref.created_at)}</td>
+                    <td className="py-5 px-2 text-right font-medium text-[#1C1C1A]">{formatCurrency(ref.amount)}</td>
                   </tr>
                 ))}
+                {myReferrals.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="py-12 text-center text-sm text-[#738276] italic">Riwayat rujukan Anda belum tersedia.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
-            {myReferrals.length === 0 && (
-              <p className="py-20 text-center font-display text-sm font-black uppercase opacity-20 italic">No_Activity_Detected_In_Buffer</p>
-            )}
           </div>
         </div>
       </section>

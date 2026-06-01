@@ -1,83 +1,101 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Syne", sans-serif;
-  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-serif: "Fraunces", serif;
+  --font-sans: "DM Sans", sans-serif;
   
-  --color-editorial-bg: #F5F5F0;
-  --color-editorial-ink: #1A1A1A;
-  --color-editorial-ochre: #D4A373;
+  --color-paper: #FDFDFB;
+  --color-ink: #1C1C1A;
+  --color-ink-light: #4A4A48;
+  --color-sage: #738276;
+  --color-surface: #F5F5F2;
+  --color-border: #E8E8E4;
 }
 
 :root {
-  --foreground-rgb: 26, 26, 26;
-  --background-start-rgb: 245, 245, 240;
+  --foreground-rgb: 28, 28, 26;
+  --background-start-rgb: 253, 253, 251;
 }
 
 body {
-  color: var(--color-editorial-ink);
-  background-color: var(--color-editorial-bg);
+  color: var(--color-ink);
+  background-color: var(--color-paper);
   font-family: var(--font-sans);
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Editorial Typography */
-h1, h2, h3, .font-display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -0.05em;
-  line-height: 0.85;
+/* Humanist Minimalist Typography */
+.font-serif {
+  font-family: var(--font-serif);
 }
 
-/* Editorial Layout Utilities */
-@utility ed-card {
-  padding: 3rem;
-  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.heading-1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-@utility ed-btn {
+.heading-2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* Minimalist Utilities */
+@utility h-card {
+  background-color: white;
+  border: 1px solid var(--color-border);
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px -12px rgba(0,0,0,0.03);
+}
+
+@utility h-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem 2rem;
-  background-color: var(--color-editorial-ink);
-  color: var(--color-editorial-bg);
-  font-family: var(--font-display);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.875rem;
-  letter-spacing: 0.1em;
-  transition: all 0.3s ease;
+  padding: 0.875rem 1.75rem;
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  border-radius: 99px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
   &:hover {
-    background-color: var(--color-editorial-ochre);
-    transform: translateY(-2px);
+    background-color: var(--color-ink-light);
+    transform: translateY(-1px);
   }
 }
 
-@utility giant-text {
-  font-size: clamp(4rem, 15vw, 12rem);
-  line-height: 0.8;
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.07em;
+@utility h-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  outline: none;
+  transition: all 0.2s;
+  &:focus {
+    background-color: white;
+    border-color: var(--color-border);
+    box-shadow: 0 0 0 4px var(--color-surface);
+  }
 }
 
-@utility vertical-text {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
-/* Custom scrollbar for Editorial UI */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--color-editorial-bg);
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--color-editorial-ink);
+  background: var(--color-border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-light);
 }
