@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { formatCurrency } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
 import SettlementManager from '@/components/SettlementManager';
+import RewardConfigEditor from '@/components/RewardConfigEditor';
 
 export default async function DeveloperDashboard() {
   const cookieStore = await cookies();
@@ -18,20 +19,28 @@ export default async function DeveloperDashboard() {
     }
   );
 
-  const [partnerRes, referralsRes, pendingRes, settlementDataRes] = await Promise.all([
+  const [partnerRes, referralsRes, pendingRes, settlementDataRes, rewardConfigsRes] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact' }).eq('role', 'partner'),
     supabase.from('referrals').select('amount'),
-    supabase.from('payments').select('amount').eq('status', 'pending'),
-    supabase.from('profiles').select('id, full_name, whatsapp, referrals(id, pendaftar_name, amount, created_at, status)').eq('role', 'partner')
+    supabase.from('referrals').select('amount').neq('status', 'settled'),
+    supabase.from('profiles').select(`
+      id, 
+      full_name, 
+      whatsapp, 
+      referrals(id, pendaftar_name, amount, created_at, status)
+    `).eq('role', 'partner'),
+    supabase.from('reward_configs').select('*').order('rank', { ascending: true })
   ]);
 
   const partnerCount = partnerRes.count || 0;
   const partnersData = partnerRes.data || [];
   const totalReferrals = referralsRes.data?.length || 0;
   const totalCommission = referralsRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
+  
+  // Piutang tertunda: rujukan yang belum berstatus 'settled'
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
-  // Transform data for SettlementManager
+  // Transform data for SettlementManager: hanya rujukan yang belum 'settled'
   const settlementData = (settlementDataRes.data || []).map(p => {
     type DBReferral = {
       id: string;
@@ -41,15 +50,15 @@ export default async function DeveloperDashboard() {
       status: string;
     };
     
-    const unearnedReferrals = (p.referrals as unknown as DBReferral[] || []).filter(r => r.status === 'confirmed');
-    const total_pending = unearnedReferrals.reduce((sum, r) => sum + Number(r.amount), 0);
+    const unpaidReferrals = (p.referrals as unknown as DBReferral[] || []).filter(r => r.status !== 'settled');
+    const total_pending = unpaidReferrals.reduce((sum, r) => sum + Number(r.amount), 0);
     
     return {
       id: p.id,
       full_name: p.full_name,
       whatsapp: p.whatsapp,
       total_pending,
-      referrals: unearnedReferrals
+      referrals: unpaidReferrals
     };
   }).filter(p => p.total_pending > 0);
 
@@ -72,7 +81,7 @@ export default async function DeveloperDashboard() {
         </div>
 
         <div>
-          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Dana Terkumpul</p>
+          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Dana Terakumulasi</p>
           <div className="flex items-baseline gap-3">
             <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">{formatCurrency(totalCommission)}</span>
           </div>
@@ -99,7 +108,12 @@ export default async function DeveloperDashboard() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="heading-2 text-[#1C1C1A]">Tindakan Cepat</h2>
         </div>
-        <DeveloperActions partners={partnersData} />
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+          <DeveloperActions partners={partnersData} />
+          <div className="mt-6">
+            <RewardConfigEditor configs={rewardConfigsRes.data || []} />
+          </div>
+        </div>
       </section>
     </div>
   );

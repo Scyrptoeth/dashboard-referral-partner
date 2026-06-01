@@ -13,20 +13,24 @@ Dokumen ini mencatat riwayat pengembangan, *lessons learned*, dan rencana kerja 
   - Melewati 3 iterasi radikal (*Technical Brutalist* dan *Avant-Garde Editorial*).
   - Berlabuh pada **Humanist Editorial Minimalism** (*Fraunces* + *DM Sans*, warna *Paper White* #FDFDFB & *Ink Black* #1C1C1A) yang minimalis, elegan, dan menjauhi kesan aplikasi template AI generik.
 - **Fungsionalitas Developer Dashboard (CRUD):** Implementasi penuh *Next.js Server Actions* dan komponen UI (Modal) untuk pendaftaran Partner baru (menggunakan Admin API) dan input data Rujukan manual. Fitur ini sudah terintegrasi dan siap digunakan.
-- **Pembersihan Kode & Deployment:** Seluruh error linting telah diperbaiki (tipe 'any' di dashboard partner, unused imports), kode telah di-*push* ke GitHub (`feat: implement partner registration...`), dan build lokal terverifikasi sukses.
-- **Konfigurasi Environment Vercel:** `SUPABASE_SERVICE_ROLE_KEY` telah berhasil dipasang secara otomatis ke semua environment Vercel (Production, Preview, Development) menggunakan Vercel CLI, memastikan fitur registrasi berjalan di situs *live*.
+- **Manajemen Pencairan (Hybrid Detail):** Selesainya fitur pemrosesan komisi di mana Developer dapat memverifikasi rincian rujukan per partner sebelum menandai pembayaran sebagai "Lunas". Menggunakan komponen `SettlementManager.tsx`.
+- **Feedback Anonim:** Implementasi saluran komunikasi searah yang aman dari Partner ke Developer tanpa menyimpan identitas pengirim (privacy-safe).
+- **Config Management (Reward UI):** Implementasi modul `RewardConfigEditor.tsx` dan Server Action `updateRewardConfigs` untuk pengelolaan dinamis persentase bonus Top 5.
+- **Referral Status Sync & Period Management:** 
+    - Penambahan status `'settled'` dan kolom `payment_id` pada rujukan (Opsi A - Audit Trail).
+    - Dashboard kini secara otomatis melakukan "Reset" dengan memfilter rujukan yang sudah berstatus `'settled'`, memastikan Leaderboard dan Estimasi Pendapatan hanya mencerminkan periode berjalan yang belum dibayar.
+- **Pembersihan Kode & Deployment:** Seluruh rute dashboard telah diperbarui untuk mendukung sistem status baru.
 
 ### 2. Evaluasi Lesson Learned (Wawasan Penting)
-- **Supabase Auth via Phone/WA (Bypass):** Supabase secara bawaan sangat mengikat pada "Email". Melakukan validasi *Virtual Email* di *client-side* (menambah `@persiapantubel.com` sebelum di-*post* ke auth) adalah teknik *workaround* terbaik untuk menyediakan login "Hanya Nomor WhatsApp" tanpa perlu biaya langganan SMS OTP (Supabase Twilio) dan tetap mendapatkan sistem keamanan *hash password* yang tangguh.
-- **Admin API untuk Registrasi:** Menggunakan `auth.admin.createUser` dengan `service_role_key` sangat krusial agar Developer dapat mendaftarkan Partner baru tanpa terkeluar dari sesinya sendiri (karena registrasi publik biasanya otomatis melakukan login).
-- **Automatisasi Env via CLI:** Menggunakan Vercel CLI untuk menyuntikkan *Environment Variables* terbukti lebih cepat dan akurat daripada konfigurasi manual via dashboard web, terutama saat menangani kunci sensitif yang panjang.
+- **Status-Based Period Reset:** Menggunakan status `'settled'` jauh lebih efisien daripada melakukan penghapusan atau pemindahan data manual ke tabel arsip. Hal ini menjaga integritas data historis di satu tempat (`referrals`) namun tetap memberikan pengalaman "Reset" yang bersih bagi pengguna.
+- **Relasi One-to-Many (Payment to Referrals):** Menghubungkan banyak rujukan ke satu ID pembayaran melalui `payment_id` mempermudah proses audit dan rekonsiliasi keuangan di masa mendatang.
 
 ### 3. Peta Risiko & Hutang Teknis (Tech Debt)
-- Fitur Manajemen Pencairan (tabel `payments`) masih berupa UI statis di dashboard developer.
-- Komponen Form untuk Umpan Balik Anonim (Feedback) belum dibangun secara visual maupun logika fungsinya.
+- **Database Migration Necessity:** Seluruh fitur baru ini bergantung pada SQL Migration untuk enum `referral_status` dan kolom `payment_id`.
 
 ### 4. Rumusan Next Action (Tindakan Berikutnya)
-1. **[Prioritas 1] Manajemen Pencairan:** Bangun *view* "Pencairan Dana" agar Developer dapat menandai tagihan komisi sebagai "Lunas" (mengubah status tabel `payments`).
-2. **[Prioritas 2] Fitur Feedback:** Kembangkan antarmuka dan *backend logic* untuk Partner agar mereka dapat mengirimkan keluhan/saran yang masuk ke tabel `feedback`.
+1. **[Prioritas 1] Testing & QA:** Verifikasi alur pencairan (settlement) untuk memastikan status rujukan berubah menjadi 'settled' secara atomik.
+2. **[Prioritas 2] Password Management:** Membangun fitur ganti password mandiri untuk Partner.
+3. **[Prioritas 3] PDF Report:** Ekspor riwayat pembayaran menjadi laporan PDF sederhana bagi Partner.
 
 ---
