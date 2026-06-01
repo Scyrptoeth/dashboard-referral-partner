@@ -20,10 +20,8 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Supabase email-based login (we use whatsapp + @whatsapp.com as fake email for simplicity if using standard auth)
-      // Or we can use custom sign in if we have a function. 
-      // Based on GRAND_DESIGN, it's whatsapp + password.
-      const email = `${whatsapp}@referral.persiapantubel.com`;
+      // Supabase email-based login (we use whatsapp + @persiapantubel.com as fake email)
+      const email = `${whatsapp}@persiapantubel.com`;
       
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
