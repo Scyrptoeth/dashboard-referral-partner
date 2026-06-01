@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { formatCurrency } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
+import SettlementManager from '@/components/SettlementManager';
 
 export default async function DeveloperDashboard() {
   const cookieStore = await cookies();
@@ -17,10 +18,11 @@ export default async function DeveloperDashboard() {
     }
   );
 
-  const [partnerRes, referralsRes, pendingRes] = await Promise.all([
+  const [partnerRes, referralsRes, pendingRes, settlementDataRes] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact' }).eq('role', 'partner'),
     supabase.from('referrals').select('amount'),
-    supabase.from('payments').select('amount').eq('status', 'pending')
+    supabase.from('payments').select('amount').eq('status', 'pending'),
+    supabase.from('profiles').select('id, full_name, whatsapp, referrals(id, pendaftar_name, amount, created_at, status)').eq('role', 'partner')
   ]);
 
   const partnerCount = partnerRes.count || 0;
@@ -29,8 +31,30 @@ export default async function DeveloperDashboard() {
   const totalCommission = referralsRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
+  // Transform data for SettlementManager
+  const settlementData = (settlementDataRes.data || []).map(p => {
+    type DBReferral = {
+      id: string;
+      pendaftar_name: string;
+      amount: number;
+      created_at: string;
+      status: string;
+    };
+    
+    const unearnedReferrals = (p.referrals as unknown as DBReferral[] || []).filter(r => r.status === 'confirmed');
+    const total_pending = unearnedReferrals.reduce((sum, r) => sum + Number(r.amount), 0);
+    
+    return {
+      id: p.id,
+      full_name: p.full_name,
+      whatsapp: p.whatsapp,
+      total_pending,
+      referrals: unearnedReferrals
+    };
+  }).filter(p => p.total_pending > 0);
+
   return (
-    <div className="space-y-24">
+    <div className="space-y-24 pb-24">
       <header className="max-w-2xl">
         <h1 className="heading-1 text-[#1C1C1A] mb-6">Tinjauan Kinerja</h1>
         <p className="text-lg text-[#738276] leading-relaxed">
@@ -60,11 +84,15 @@ export default async function DeveloperDashboard() {
               <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-3">Tertunda (Menunggu Pembayaran)</p>
               <h3 className="font-serif text-4xl text-[#B94A48]">{formatCurrency(totalPending)}</h3>
             </div>
-            <button className="h-btn">
-              Kelola Pencairan
-            </button>
           </div>
         </div>
+      </section>
+
+      <section className="border-t border-[#E8E8E4] pt-16">
+        <div className="flex justify-between items-center mb-12">
+          <h2 className="heading-2 text-[#1C1C1A]">Manajemen Pencairan</h2>
+        </div>
+        <SettlementManager data={settlementData} />
       </section>
 
       <section className="border-t border-[#E8E8E4] pt-16">

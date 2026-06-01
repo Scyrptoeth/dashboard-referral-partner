@@ -12,20 +12,21 @@ Dokumen ini mencatat riwayat pengembangan, *lessons learned*, dan rencana kerja 
 - **Pencarian Desain "Anti-Slop":** 
   - Melewati 3 iterasi radikal (*Technical Brutalist* dan *Avant-Garde Editorial*).
   - Berlabuh pada **Humanist Editorial Minimalism** (*Fraunces* + *DM Sans*, warna *Paper White* #FDFDFB & *Ink Black* #1C1C1A) yang minimalis, elegan, dan menjauhi kesan aplikasi template AI generik.
-- **Fungsionalitas Leaderboard:** Papan peringkat untuk Dashboard Partner ditingkatkan dari Top 5 menjadi **Top 7 mitra terbaik**.
-- **Infrastruktur DevOps:** Proyek telah otomatis terhubung ke repositori GitHub dan sukses tayang secara *Live* (*production*) di Vercel.
+- **Fungsionalitas Developer Dashboard (CRUD):** Implementasi penuh *Next.js Server Actions* dan komponen UI (Modal) untuk pendaftaran Partner baru (menggunakan Admin API) dan input data Rujukan manual. Fitur ini sudah terintegrasi dan siap digunakan.
+- **Pembersihan Kode & Deployment:** Seluruh error linting telah diperbaiki (tipe 'any' di dashboard partner, unused imports), kode telah di-*push* ke GitHub (`feat: implement partner registration...`), dan build lokal terverifikasi sukses.
+- **Konfigurasi Environment Vercel:** `SUPABASE_SERVICE_ROLE_KEY` telah berhasil dipasang secara otomatis ke semua environment Vercel (Production, Preview, Development) menggunakan Vercel CLI, memastikan fitur registrasi berjalan di situs *live*.
 
 ### 2. Evaluasi Lesson Learned (Wawasan Penting)
 - **Supabase Auth via Phone/WA (Bypass):** Supabase secara bawaan sangat mengikat pada "Email". Melakukan validasi *Virtual Email* di *client-side* (menambah `@persiapantubel.com` sebelum di-*post* ke auth) adalah teknik *workaround* terbaik untuk menyediakan login "Hanya Nomor WhatsApp" tanpa perlu biaya langganan SMS OTP (Supabase Twilio) dan tetap mendapatkan sistem keamanan *hash password* yang tangguh.
-- **Spektrum "Anti-Slop" Desain:** Menghindari *AI Slop* tidak selalu berarti membuat desain yang sangat aneh atau brutalist. Desain *Humanist Editorial* membuktikan bahwa dengan pemilihan *font pairing* berkarakter (*serif & sans*) dan warna *warm off-white*, desain fungsional pun bisa terlihat sangat premium dan seperti dibuat oleh seniman UI.
+- **Admin API untuk Registrasi:** Menggunakan `auth.admin.createUser` dengan `service_role_key` sangat krusial agar Developer dapat mendaftarkan Partner baru tanpa terkeluar dari sesinya sendiri (karena registrasi publik biasanya otomatis melakukan login).
+- **Automatisasi Env via CLI:** Menggunakan Vercel CLI untuk menyuntikkan *Environment Variables* terbukti lebih cepat dan akurat daripada konfigurasi manual via dashboard web, terutama saat menangani kunci sensitif yang panjang.
 
 ### 3. Peta Risiko & Hutang Teknis (Tech Debt)
-- Saat ini tombol-tombol utama di dasbor Developer (seperti "Tambah Rujukan Manual", "Daftarkan Mitra", "Kelola Pencairan") **masih bersifat UI Statis**. Belum ada logika *mutation* / *Server Actions* di balik tombol-tombol tersebut.
+- Fitur Manajemen Pencairan (tabel `payments`) masih berupa UI statis di dashboard developer.
 - Komponen Form untuk Umpan Balik Anonim (Feedback) belum dibangun secara visual maupun logika fungsinya.
 
 ### 4. Rumusan Next Action (Tindakan Berikutnya)
-1. **[Prioritas 1] CRUD Developer Dashboard:** Implementasikan *Next.js Server Actions* untuk membuat akun Partner baru (dari UI admin) dan form penambahan data Referral (Rujukan) baru ke database.
-2. **[Prioritas 2] Manajemen Pencairan:** Bangun *view* "Pencairan Dana" agar Developer dapat menandai tagihan komisi sebagai "Lunas" (mengubah status tabel `payments`).
-3. **[Prioritas 3] Fitur Feedback:** Kembangkan antarmuka dan *backend logic* untuk Partner agar mereka dapat mengirimkan keluhan/saran yang masuk ke tabel `feedback`.
+1. **[Prioritas 1] Manajemen Pencairan:** Bangun *view* "Pencairan Dana" agar Developer dapat menandai tagihan komisi sebagai "Lunas" (mengubah status tabel `payments`).
+2. **[Prioritas 2] Fitur Feedback:** Kembangkan antarmuka dan *backend logic* untuk Partner agar mereka dapat mengirimkan keluhan/saran yang masuk ke tabel `feedback`.
 
 ---

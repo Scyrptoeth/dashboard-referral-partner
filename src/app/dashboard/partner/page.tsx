@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import FeedbackForm from '@/components/FeedbackForm';
 
 export default async function PartnerDashboard() {
   const cookieStore = await cookies();
@@ -47,7 +48,7 @@ export default async function PartnerDashboard() {
     .slice(0, 7);
 
   return (
-    <div className="space-y-24">
+    <div className="space-y-24 pb-24">
       <header className="max-w-3xl">
         <h1 className="heading-1 text-[#1C1C1A] mb-6">Pencapaian Anda</h1>
         <p className="text-lg text-[#738276] leading-relaxed">
@@ -124,6 +125,10 @@ export default async function PartnerDashboard() {
             </table>
           </div>
         </div>
+      </section>
+
+      <section className="max-w-xl border-t border-[#E8E8E4] pt-16">
+        <FeedbackForm />
       </section>
     </div>
   );
