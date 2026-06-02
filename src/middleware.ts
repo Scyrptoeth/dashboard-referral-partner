@@ -54,36 +54,37 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  // 1. Validasi user secara server-side (lebih aman dari getSession)
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   // Protected routes: /dashboard
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!session) {
+    if (!user) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // Security Check: Verifikasi status dan role dari database secara real-time
-    const { data: profile } = await supabase
+    // 2. Verifikasi profil dari database
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role, is_active')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
 
     // Jika profil tidak ditemukan atau dinonaktifkan
-    if (!profile || profile.is_active === false) {
+    if (profileError || !profile || profile.is_active === false) {
       const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('error', 'Akses ditangguhkan atau akun tidak ditemukan.');
+      const reason = !profile ? 'Akun belum terdaftar di database.' : 'Akses akun Kamu ditangguhkan.';
+      loginUrl.searchParams.set('error', reason);
       
-      // Sangat penting: Kita harus benar-benar menghapus sesi agar /login tidak me-redirect balik ke /dashboard
+      // Paksa logout dan hapus semua cookie auth
       const res = NextResponse.redirect(loginUrl);
-      res.cookies.set('sb-access-token', '', { maxAge: 0 });
-      res.cookies.set('sb-refresh-token', '', { maxAge: 0 });
+      // Biarkan middleware response menangani pembersihan via supabase client
       return res;
     }
 
     const dbRole = profile.role;
 
-    // Role-based authorization menggunakan data Database (Source of Truth)
+    // 3. Role-based authorization
     if (request.nextUrl.pathname.startsWith('/dashboard/developer') && dbRole !== 'developer') {
       return NextResponse.redirect(new URL('/dashboard/partner', request.url));
     }
@@ -92,8 +93,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect from login if already logged in (hanya jika tidak ada error parameter)
-  if (request.nextUrl.pathname === '/login' && session && !request.nextUrl.searchParams.has('error')) {
+  // Redirect from login if already logged in (hanya jika tidak ada error)
+  if (request.nextUrl.pathname === '/login' && user && !request.nextUrl.searchParams.has('error')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
