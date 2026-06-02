@@ -1,8 +1,7 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatDate } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
 import PartnerAdminTools from '@/components/PartnerAdminTools';
+import { createSupabaseAdminClient } from '@/lib/supabase-server';
 
 import { Metadata } from 'next';
 
@@ -11,20 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function ManagePartnersPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const supabaseAdmin = createSupabaseAdminClient();
 
-  const { data: partners } = await supabase
+  const { data: partners } = await supabaseAdmin
     .from('profiles')
     .select('*')
     .eq('role', 'partner')

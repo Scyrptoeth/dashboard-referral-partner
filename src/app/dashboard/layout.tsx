@@ -1,39 +1,21 @@
 import { ReactNode } from 'react';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Toaster } from 'sonner';
+import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
+  const { user, profile } = await getCurrentUserAndProfile();
+  if (!user) redirect('/login');
+  if (!profile) redirect('/login?error=Profil%20Kamu%20tidak%20ditemukan%20atau%20terjadi%20gangguan%20koneksi.');
 
   const isDeveloper = profile?.role === 'developer';
+  const supabaseAdmin = createSupabaseAdminClient();
 
   // Fetch unread feedback count if developer
   let unreadCount = 0;
   if (isDeveloper) {
-    const { count } = await supabase
+    const { count } = await supabaseAdmin
       .from('feedback')
       .select('*', { count: 'exact', head: true })
       .eq('is_read', false);

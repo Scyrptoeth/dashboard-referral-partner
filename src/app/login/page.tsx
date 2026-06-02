@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -13,14 +13,7 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Ambil error dari URL (dikirim oleh middleware)
-  useEffect(() => {
-    const urlError = searchParams.get('error');
-    if (urlError) {
-      setError(urlError);
-    }
-  }, [searchParams]);
+  const displayError = error ?? searchParams.get('error');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,9 +31,9 @@ function LoginContent() {
 
       router.push('/dashboard');
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
-      setError(err.message || 'Informasi login tidak sesuai. Silakan periksa kembali.');
+      setError(err instanceof Error ? err.message : 'Informasi login tidak sesuai. Silakan periksa kembali.');
     } finally {
       setLoading(false);
     }
@@ -94,10 +87,10 @@ function LoginContent() {
             </div>
           </div>
 
-          {error && (
+          {displayError && (
             <div className="p-4 bg-[#B94A48]/5 border border-[#B94A48]/10 rounded-xl">
               <p className="text-[#B94A48] text-sm text-center font-medium">
-                {error}
+                {displayError}
               </p>
             </div>
           )}

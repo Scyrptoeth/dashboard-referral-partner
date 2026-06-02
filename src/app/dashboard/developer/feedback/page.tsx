@@ -1,8 +1,7 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatDate } from '@/lib/utils';
 import { MessageSquare, Trash2, CheckCheck } from 'lucide-react';
 import { deleteFeedback, markFeedbackAsRead } from '@/app/actions/mutations';
+import { createSupabaseAdminClient } from '@/lib/supabase-server';
 
 import { Metadata } from 'next';
 
@@ -11,20 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function DeveloperFeedbackPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const supabaseAdmin = createSupabaseAdminClient();
 
-  const { data: feedbackList, error } = await supabase
+  const { data: feedbackList, error } = await supabaseAdmin
     .from('feedback')
     .select('*')
     .order('created_at', { ascending: false });

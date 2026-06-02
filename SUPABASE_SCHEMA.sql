@@ -86,25 +86,31 @@ ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
 
 -- RLS POLICIES
 
+-- Helper to avoid policy recursion when other policies need to check Developer role.
+CREATE OR REPLACE FUNCTION is_developer(user_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM profiles
+    WHERE id = user_id
+      AND role = 'developer'
+      AND is_active = true
+  );
+$$ LANGUAGE SQL SECURITY DEFINER SET search_path = public;
+
 -- Profiles: 
 CREATE POLICY "Profiles are viewable by everyone authenticated" 
 ON profiles FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "Profiles can be updated by developers" 
-ON profiles FOR UPDATE TO authenticated USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
-);
+ON profiles FOR UPDATE TO authenticated USING (is_developer(auth.uid()));
 
 CREATE POLICY "Profiles can be inserted by developers" 
-ON profiles FOR INSERT TO authenticated WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
-);
+ON profiles FOR INSERT TO authenticated WITH CHECK (is_developer(auth.uid()));
 
 -- Referrals:
 CREATE POLICY "Referrals: Developer full access"
-ON referrals FOR ALL TO authenticated USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
-);
+ON referrals FOR ALL TO authenticated USING (is_developer(auth.uid()));
 
 CREATE POLICY "Referrals: Partner view own"
 ON referrals FOR SELECT TO authenticated USING (
@@ -113,9 +119,7 @@ ON referrals FOR SELECT TO authenticated USING (
 
 -- Payments:
 CREATE POLICY "Payments: Developer full access"
-ON payments FOR ALL TO authenticated USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
-);
+ON payments FOR ALL TO authenticated USING (is_developer(auth.uid()));
 
 CREATE POLICY "Payments: Partner view own"
 ON payments FOR SELECT TO authenticated USING (
@@ -127,18 +131,14 @@ CREATE POLICY "Reward Configs: Authenticated view"
 ON reward_configs FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "Reward Configs: Developer update"
-ON reward_configs FOR UPDATE TO authenticated USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
-);
+ON reward_configs FOR UPDATE TO authenticated USING (is_developer(auth.uid()));
 
 -- Feedback:
 CREATE POLICY "Feedback: Authenticated insert"
 ON feedback FOR INSERT TO authenticated WITH CHECK (true);
 -- Feedback: Developer view
 CREATE POLICY "Feedback: Developer view" 
-ON feedback FOR SELECT TO authenticated USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
-);
+ON feedback FOR SELECT TO authenticated USING (is_developer(auth.uid()));
 
 -- RPC: Atomic Settlement
 CREATE OR REPLACE FUNCTION settle_partner_payments(

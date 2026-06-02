@@ -1,9 +1,8 @@
 'use server'
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 const phoneRegex = /^(08|628)[0-9]{8,13}$/;
 
@@ -32,20 +31,14 @@ export async function addReferral(formData: FormData) {
     return { error: validated.error.issues[0].message };
   }
 
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const { profile } = await getCurrentUserAndProfile();
+  if (profile?.role !== 'developer') {
+    return { error: 'Otorisasi ditolak.' };
+  }
 
-  const { error } = await supabase.from('referrals').insert({
+  const supabaseAdmin = createSupabaseAdminClient();
+
+  const { error } = await supabaseAdmin.from('referrals').insert({
     ...validated.data,
     status: 'confirmed'
   });
@@ -75,18 +68,12 @@ export async function registerPartner(formData: FormData) {
     return { error: 'SUPABASE_SERVICE_ROLE_KEY tidak ditemukan di environment variables. Hubungi admin.' };
   }
 
-  // Use service_role_key to create user to avoid signing out the developer
-  const { createClient } = await import('@supabase/supabase-js');
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  );
+  const { profile } = await getCurrentUserAndProfile();
+  if (profile?.role !== 'developer') {
+    return { error: 'Otorisasi ditolak.' };
+  }
+
+  const supabaseAdmin = createSupabaseAdminClient();
 
   const email = `${validated.data.whatsapp}@persiapantubel.com`;
 
@@ -120,35 +107,14 @@ export async function registerPartner(formData: FormData) {
 }
 
 export async function adminUpdatePartner(partnerId: string, updates: { password?: string; is_active?: boolean }) {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
   // Check if caller is developer
-  const { data: { session } } = await supabase.auth.getSession();
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', session?.user.id).single();
+  const { profile } = await getCurrentUserAndProfile();
   
   if (profile?.role !== 'developer') {
     return { error: 'Otorisasi ditolak.' };
   }
 
-  const { createClient } = await import('@supabase/supabase-js');
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: { autoRefreshToken: false, persistSession: false }
-    }
-  );
+  const supabaseAdmin = createSupabaseAdminClient();
 
   // 1. Update Auth if password provided
   if (updates.password) {

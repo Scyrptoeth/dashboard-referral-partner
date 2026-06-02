@@ -1,7 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { Archive as ArchiveIcon, History } from 'lucide-react';
+import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 import { Metadata } from 'next';
 
@@ -10,31 +8,18 @@ export const metadata: Metadata = {
 };
 
 export default async function ArchivePage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  const { data: { session } } = await supabase.auth.getSession();
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', session?.user.id).single();
+  const { user, profile } = await getCurrentUserAndProfile();
+  const supabaseAdmin = createSupabaseAdminClient();
   const isDeveloper = profile?.role === 'developer';
 
-  let query = supabase
+  let query = supabaseAdmin
     .from('referrals')
     .select('*, profiles(full_name, whatsapp), payments(amount, paid_at)')
     .eq('status', 'settled')
     .order('created_at', { ascending: false });
 
   if (!isDeveloper) {
-    query = query.eq('partner_id', session?.user.id);
+    query = query.eq('partner_id', user?.id);
   }
 
   const { data: settledReferrals } = await query;

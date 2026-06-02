@@ -1,35 +1,22 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import { ArrowUpRight, TrendingUp, Share2 } from 'lucide-react';
 import TrendChart from '@/components/TrendChart';
 import ReferralShareToolkit from '@/components/ReferralShareToolkit';
+import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 export default async function PartnerDashboard() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  const { data: { session } } = await supabase.auth.getSession();
+  const { user } = await getCurrentUserAndProfile();
+  const supabaseAdmin = createSupabaseAdminClient();
   
   const [myReferralsRes, leaderboardDataRes, rewardConfigsRes, profileRes] = await Promise.all([
-    supabase.from('referrals').select('*').eq('partner_id', session?.user.id).order('created_at', { ascending: false }),
-    supabase.from('referrals')
+    supabaseAdmin.from('referrals').select('*').eq('partner_id', user?.id).order('created_at', { ascending: false }),
+    supabaseAdmin.from('referrals')
       .select('partner_id, profiles(full_name), amount, created_at')
       .neq('status', 'settled')
       .order('created_at', { ascending: true }),
-    supabase.from('reward_configs').select('*').order('rank', { ascending: true }),
-    supabase.from('profiles').select('full_name, whatsapp').eq('id', session?.user.id).single()
+    supabaseAdmin.from('reward_configs').select('*').order('rank', { ascending: true }),
+    supabaseAdmin.from('profiles').select('full_name, whatsapp').eq('id', user?.id).single()
   ]);
 
   const profile = profileRes.data;

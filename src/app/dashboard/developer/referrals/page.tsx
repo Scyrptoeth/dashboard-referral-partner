@@ -1,8 +1,7 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
 import ReferralEditor from '@/components/ReferralEditor';
+import { createSupabaseAdminClient } from '@/lib/supabase-server';
 
 import { Metadata } from 'next';
 
@@ -11,25 +10,14 @@ export const metadata: Metadata = {
 };
 
 export default async function DataReferralsPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const supabaseAdmin = createSupabaseAdminClient();
 
   const [referralsRes, partnersRes] = await Promise.all([
-    supabase
+    supabaseAdmin
       .from('referrals')
       .select('*, profiles(full_name, whatsapp)')
       .order('created_at', { ascending: false }),
-    supabase.from('profiles').select('*').eq('role', 'partner')
+    supabaseAdmin.from('profiles').select('*').eq('role', 'partner')
   ]);
 
   const referrals = referralsRes.data || [];

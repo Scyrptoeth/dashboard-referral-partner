@@ -1,34 +1,14 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatDate } from '@/lib/utils';
 import FeedbackForm from '@/components/FeedbackForm';
+import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 export default async function FeedbackPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', session?.user.id)
-    .single();
-
+  const { profile } = await getCurrentUserAndProfile();
+  const supabaseAdmin = createSupabaseAdminClient();
   const isDeveloper = profile?.role === 'developer';
 
   if (isDeveloper) {
-    const { data: feedbackList } = await supabase
+    const { data: feedbackList } = await supabaseAdmin
       .from('feedback')
       .select('*')
       .order('created_at', { ascending: false });

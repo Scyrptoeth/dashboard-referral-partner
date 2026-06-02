@@ -1,38 +1,24 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatCurrency } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
 import RewardConfigEditor from '@/components/RewardConfigEditor';
 import Link from 'next/link';
 import { ArrowUpRight, TrendingUp } from 'lucide-react';
 import TrendChart from '@/components/TrendChart';
+import { createSupabaseAdminClient } from '@/lib/supabase-server';
 
 export default async function DeveloperDashboard() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const supabaseAdmin = createSupabaseAdminClient();
 
   const [partnerRes, referralsRes, pendingRes, rewardConfigsRes] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact' }).eq('role', 'partner'),
-    supabase.from('referrals').select('amount, created_at, status'),
-    supabase.from('referrals').select('amount').neq('status', 'settled'),
-    supabase.from('reward_configs').select('*').order('rank', { ascending: true })
+    supabaseAdmin.from('profiles').select('*', { count: 'exact' }).eq('role', 'partner'),
+    supabaseAdmin.from('referrals').select('amount, created_at, status'),
+    supabaseAdmin.from('referrals').select('amount').neq('status', 'settled'),
+    supabaseAdmin.from('reward_configs').select('*').order('rank', { ascending: true })
   ]);
 
   const partnerCount = partnerRes.count || 0;
   const partnersData = partnerRes.data || [];
   const referralsData = referralsRes.data || [];
-  const totalReferrals = referralsData.length;
-  const totalCommission = referralsData.reduce((acc, curr) => acc + Number(curr.amount), 0);
   
   // Piutang tertunda: rujukan yang belum berstatus 'settled'
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;

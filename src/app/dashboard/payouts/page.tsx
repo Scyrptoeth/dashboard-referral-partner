@@ -1,7 +1,6 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import SettlementManager from '@/components/SettlementManager';
+import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 import { Metadata } from 'next';
 
@@ -10,31 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default async function PayoutsPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', session?.user.id)
-    .single();
-
+  const { user, profile } = await getCurrentUserAndProfile();
+  const supabaseAdmin = createSupabaseAdminClient();
   const isDeveloper = profile?.role === 'developer';
 
   if (isDeveloper) {
-    const { data: settlementDataRes } = await supabase.from('profiles').select(`
+    const { data: settlementDataRes } = await supabaseAdmin.from('profiles').select(`
       id, 
       full_name, 
       whatsapp, 
@@ -74,10 +54,10 @@ export default async function PayoutsPage() {
   }
 
   // Partner View: Payment History
-  const { data: payments } = await supabase
+  const { data: payments } = await supabaseAdmin
     .from('payments')
     .select('*')
-    .eq('partner_id', session?.user.id)
+    .eq('partner_id', user?.id)
     .order('created_at', { ascending: false });
 
   return (

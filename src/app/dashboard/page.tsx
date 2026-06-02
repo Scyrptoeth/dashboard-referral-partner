@@ -1,6 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getCurrentUserAndProfile } from '@/lib/supabase-server';
 
 import { Metadata } from 'next';
 
@@ -10,31 +9,15 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const { user, profile } = await getCurrentUserAndProfile();
 
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
+  if (!user) {
     redirect('/login');
   }
 
-  // Get user profile role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', session.user.id)
-    .single();
+  if (!profile) {
+    redirect('/login?error=Profil%20Kamu%20tidak%20ditemukan%20atau%20terjadi%20gangguan%20koneksi.');
+  }
 
   if (profile?.role === 'developer') {
     redirect('/dashboard/developer');
