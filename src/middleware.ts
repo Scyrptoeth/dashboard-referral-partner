@@ -63,23 +63,26 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // 2. Verifikasi profil dari database
+    // 2. Verifikasi profil dari database dengan rujukan ID yang valid
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role, is_active')
       .eq('id', user.id)
       .single();
 
-    // Jika profil tidak ditemukan atau dinonaktifkan
-    if (profileError || !profile || profile.is_active === false) {
+    // Jika terjadi error teknis atau profil tidak ditemukan
+    if (profileError || !profile) {
+      console.error('Middleware Profile Error:', profileError?.message);
       const loginUrl = new URL('/login', request.url);
-      const reason = !profile ? 'Akun belum terdaftar di database.' : 'Akses akun Kamu ditangguhkan.';
-      loginUrl.searchParams.set('error', reason);
-      
-      // Paksa logout dan hapus semua cookie auth
-      const res = NextResponse.redirect(loginUrl);
-      // Biarkan middleware response menangani pembersihan via supabase client
-      return res;
+      loginUrl.searchParams.set('error', 'Profil Kamu tidak ditemukan atau terjadi gangguan koneksi.');
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Jika akun dinonaktifkan
+    if (profile.is_active === false) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('error', 'Akses akun Kamu ditangguhkan.');
+      return NextResponse.redirect(loginUrl);
     }
 
     const dbRole = profile.role;
