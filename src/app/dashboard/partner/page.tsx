@@ -9,17 +9,21 @@ export default async function PartnerDashboard() {
   const { user } = await getCurrentUserAndProfile();
   const supabaseAdmin = createSupabaseAdminClient();
   
-  const [myReferralsRes, leaderboardDataRes, rewardConfigsRes, profileRes] = await Promise.all([
+  const [myReferralsRes, leaderboardDataRes, rewardConfigsRes, profileRes, authUserRes] = await Promise.all([
     supabaseAdmin.from('referrals').select('*').eq('partner_id', user?.id).order('created_at', { ascending: false }),
     supabaseAdmin.from('referrals')
       .select('partner_id, profiles(full_name), amount, created_at')
       .neq('status', 'settled')
       .order('created_at', { ascending: true }),
     supabaseAdmin.from('reward_configs').select('*').order('rank', { ascending: true }),
-    supabaseAdmin.from('profiles').select('full_name, whatsapp').eq('id', user?.id).single()
+    supabaseAdmin.from('profiles').select('full_name, whatsapp').eq('id', user?.id).single(),
+    user ? supabaseAdmin.auth.admin.getUserById(user.id) : Promise.resolve({ data: { user: null }, error: null })
   ]);
 
   const profile = profileRes.data;
+  const promoTemplates = Array.isArray(authUserRes.data.user?.user_metadata?.promo_templates)
+    ? authUserRes.data.user.user_metadata.promo_templates
+    : [];
   const allReferrals = myReferralsRes.data || [];
   const activeReferrals = allReferrals.filter(r => r.status !== 'settled');
   
@@ -97,7 +101,7 @@ export default async function PartnerDashboard() {
             <h2 className="heading-2 text-[#1C1C1A]">Amunisi Promo</h2>
           </div>
           <p className="text-sm text-[#738276]">Pilih format yang paling sesuai untuk membagikan info Bimbel.</p>
-          <ReferralShareToolkit partnerName={profile?.full_name || ''} whatsapp={profile?.whatsapp || ''} />
+          <ReferralShareToolkit partnerName={profile?.full_name || ''} whatsapp={profile?.whatsapp || ''} initialTemplates={promoTemplates} />
         </div>
 
         <div className="space-y-12">
