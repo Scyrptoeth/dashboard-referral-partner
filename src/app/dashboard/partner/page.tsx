@@ -90,8 +90,8 @@ export default async function PartnerDashboard() {
         </div>
       </header>
 
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-[#E8E8E4] pt-16">
-        <div className="lg:col-span-4 space-y-8">
+      <section className="space-y-16 border-t border-[#E8E8E4] pt-16">
+        <div className="space-y-8">
           <div className="flex items-center gap-3 mb-2">
             <Share2 size={20} className="text-[#1C1C1A]" />
             <h2 className="heading-2 text-[#1C1C1A]">Amunisi Promo</h2>
@@ -100,38 +100,36 @@ export default async function PartnerDashboard() {
           <ReferralShareToolkit partnerName={profile?.full_name || ''} whatsapp={profile?.whatsapp || ''} />
         </div>
 
-        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="space-y-12">
-            <div>
-              <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Rujukan Periode Ini</p>
-              <div className="flex items-baseline gap-3">
-                <span className="font-serif text-7xl text-[#1C1C1A]">{totalReferrals}</span>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Estimasi Pendapatan Baru</p>
-              <div className="flex items-baseline gap-3">
-                <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">{formatCurrency(totalCommission)}</span>
-              </div>
-              <Link href="/dashboard/payouts" className="inline-flex items-center gap-2 text-sm text-[#738276] mt-4 hover:text-[#1C1C1A] transition-colors group">
-                Lihat riwayat pencairan <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </Link>
+        <div className="space-y-12">
+          <div>
+            <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Rujukan Periode Ini</p>
+            <div className="flex items-baseline gap-3">
+              <span className="font-serif text-7xl text-[#1C1C1A]">{totalReferrals}</span>
             </div>
           </div>
 
-          <div className="bg-white p-8 rounded-3xl border border-[#E8E8E4] self-start">
-            <div className="flex items-center gap-2 mb-8">
-              <TrendingUp size={18} className="text-[#1C1C1A]" />
-              <h3 className="text-sm font-medium text-[#1C1C1A]">Tren Rujukan</h3>
+          <div>
+            <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Estimasi Pendapatan Baru</p>
+            <div className="flex items-baseline gap-3">
+              <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">{formatCurrency(totalCommission)}</span>
             </div>
-            <TrendChart data={chartData} />
+            <Link href="/dashboard/payouts" className="inline-flex items-center gap-2 text-sm text-[#738276] mt-4 hover:text-[#1C1C1A] transition-colors group">
+              Lihat riwayat pencairan <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Link>
           </div>
+        </div>
+
+        <div className="bg-white p-8 rounded-3xl border border-[#E8E8E4]">
+          <div className="flex items-center gap-2 mb-8">
+            <TrendingUp size={18} className="text-[#1C1C1A]" />
+            <h3 className="text-sm font-medium text-[#1C1C1A]">Tren Rujukan</h3>
+          </div>
+          <TrendChart data={chartData} />
         </div>
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-[#E8E8E4] pt-16">
-        <div className="lg:col-span-6 space-y-8">
+      <section className="space-y-16 border-t border-[#E8E8E4] pt-16">
+        <div className="space-y-8">
           <h2 className="heading-2 text-[#1C1C1A]">Papan Peringkat (Top 5)</h2>
           <p className="text-sm text-[#738276] mb-8">Estimasi bonus tambahan berdasarkan performa periode aktif.</p>
           
@@ -157,7 +155,7 @@ export default async function PartnerDashboard() {
           </div>
         </div>
 
-        <div className="lg:col-span-6 space-y-8">
+        <div className="space-y-8">
           <div className="flex justify-between items-end">
             <h2 className="heading-2 text-[#1C1C1A]">Aktivitas Terkini</h2>
             <Link href="/dashboard/archive" className="text-sm text-[#738276] hover:text-[#1C1C1A] underline underline-offset-4">Lihat Arsip</Link>
