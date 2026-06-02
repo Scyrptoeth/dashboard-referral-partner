@@ -1,17 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginContent() {
   const [whatsapp, setWhatsapp] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Ambil error dari URL (dikirim oleh middleware)
+  useEffect(() => {
+    const urlError = searchParams.get('error');
+    if (urlError) {
+      setError(urlError);
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,9 +38,9 @@ export default function LoginPage() {
 
       router.push('/dashboard');
       router.refresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login error:', err);
-      setError('Informasi login tidak sesuai. Silakan periksa kembali.');
+      setError(err.message || 'Informasi login tidak sesuai. Silakan periksa kembali.');
     } finally {
       setLoading(false);
     }
@@ -86,9 +95,11 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-[#B94A48] text-sm text-center">
-              {error}
-            </p>
+            <div className="p-4 bg-[#B94A48]/5 border border-[#B94A48]/10 rounded-xl">
+              <p className="text-[#B94A48] text-sm text-center font-medium">
+                {error}
+              </p>
+            </div>
           )}
 
           <div className="pt-4">
@@ -107,5 +118,17 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#738276]" size={32} />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
