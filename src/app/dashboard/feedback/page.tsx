@@ -43,7 +43,7 @@ export default async function FeedbackPage() {
         <div className="grid gap-6">
           {(feedbackList || []).map((fb) => (
             <div key={fb.id} className="h-card bg-white border-[#E8E8E4]">
-              <p className="text-[#1C1C1A] leading-relaxed mb-6 italic">"{fb.content}"</p>
+              <p className="text-[#1C1C1A] leading-relaxed mb-6 italic">&quot;{fb.content}&quot;</p>
               <div className="flex justify-between items-center border-t border-[#E8E8E4] pt-4">
                 <span className="text-[10px] font-medium text-[#738276] uppercase tracking-widest">Anonim</span>
                 <span className="text-xs text-[#738276]">{formatDate(fb.created_at)}</span>

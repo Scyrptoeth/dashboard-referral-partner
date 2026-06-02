@@ -52,7 +52,7 @@ export default async function PartnerDashboard() {
     name: string;
     basis: number;
     total: number;
-    referrals: any[];
+    referrals: { amount: string | number }[];
   };
 
   // Group by partner
