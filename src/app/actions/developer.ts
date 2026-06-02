@@ -29,7 +29,7 @@ export async function addReferral(formData: FormData) {
   const validated = referralSchema.safeParse(rawData);
 
   if (!validated.success) {
-    return { error: validated.error.errors[0].message };
+    return { error: validated.error.issues[0].message };
   }
 
   const cookieStore = await cookies();
@@ -68,7 +68,7 @@ export async function registerPartner(formData: FormData) {
   const validated = partnerSchema.safeParse(rawData);
 
   if (!validated.success) {
-    return { error: validated.error.errors[0].message };
+    return { error: validated.error.issues[0].message };
   }
 
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {

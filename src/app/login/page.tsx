@@ -5,13 +5,6 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Masuk Akun | Persiapantubel',
-  description: 'Masuk ke dashboard mitra referral Persiapantubel.',
-};
-
 export default function LoginPage() {
   const [whatsapp, setWhatsapp] = useState('');
   const [password, setPassword] = useState('');
