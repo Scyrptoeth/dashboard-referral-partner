@@ -3,6 +3,12 @@ import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import SettlementManager from '@/components/SettlementManager';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Pencairan Dana | Persiapantubel',
+};
+
 export default async function PayoutsPage() {
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -78,7 +84,7 @@ export default async function PayoutsPage() {
     <div className="space-y-12">
       <header>
         <h1 className="heading-1 text-[#1C1C1A] mb-4">Riwayat Pencairan</h1>
-        <p className="text-[#738276]">Daftar pembayaran komisi yang telah Anda terima.</p>
+        <p className="text-[#738276]">Daftar pembayaran komisi yang telah Kamu terima.</p>
       </header>
 
       <div className="overflow-x-auto">

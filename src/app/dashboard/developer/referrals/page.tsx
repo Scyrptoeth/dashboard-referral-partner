@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
+import ReferralEditor from '@/components/ReferralEditor';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Data Rujukan | Persiapantubel',
+};
 
 export default async function DataReferralsPage() {
   const cookieStore = await cookies();
@@ -47,6 +54,7 @@ export default async function DataReferralsPage() {
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Tanggal</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Status</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest text-right">Komisi</th>
+                <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E8E8E4]">
@@ -68,12 +76,15 @@ export default async function DataReferralsPage() {
                       </span>
                     </td>
                     <td className="py-5 px-6 text-right font-medium text-[#1C1C1A]">{formatCurrency(ref.amount)}</td>
+                    <td className="py-5 px-6 text-right">
+                      <ReferralEditor referral={ref} partners={partners} />
+                    </td>
                   </tr>
                 );
               })}
               {referrals.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-sm text-[#738276] italic">Belum ada data rujukan.</td>
+                  <td colSpan={6} className="py-12 text-center text-sm text-[#738276] italic">Belum ada data rujukan.</td>
                 </tr>
               )}
             </tbody>

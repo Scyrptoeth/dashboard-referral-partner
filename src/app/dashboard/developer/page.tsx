@@ -4,7 +4,8 @@ import { formatCurrency } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
 import RewardConfigEditor from '@/components/RewardConfigEditor';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, TrendingUp } from 'lucide-react';
+import TrendChart from '@/components/TrendChart';
 
 export default async function DeveloperDashboard() {
   const cookieStore = await cookies();
@@ -22,18 +23,30 @@ export default async function DeveloperDashboard() {
 
   const [partnerRes, referralsRes, pendingRes, rewardConfigsRes] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact' }).eq('role', 'partner'),
-    supabase.from('referrals').select('amount'),
+    supabase.from('referrals').select('amount, created_at, status'),
     supabase.from('referrals').select('amount').neq('status', 'settled'),
     supabase.from('reward_configs').select('*').order('rank', { ascending: true })
   ]);
 
   const partnerCount = partnerRes.count || 0;
   const partnersData = partnerRes.data || [];
-  const totalReferrals = referralsRes.data?.length || 0;
-  const totalCommission = referralsRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
+  const referralsData = referralsRes.data || [];
+  const totalReferrals = referralsData.length;
+  const totalCommission = referralsData.reduce((acc, curr) => acc + Number(curr.amount), 0);
   
   // Piutang tertunda: rujukan yang belum berstatus 'settled'
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
+
+  // Agregasi Data untuk Chart (7 hari terakhir)
+  const chartDataRaw = referralsData
+    .filter(r => r.status !== 'settled')
+    .reduce((acc: Record<string, number>, curr) => {
+      const date = new Date(curr.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {});
+
+  const chartData = Object.entries(chartDataRaw).map(([date, count]) => ({ date, count })).slice(-7);
 
   return (
     <div className="space-y-24 pb-24">
@@ -44,30 +57,42 @@ export default async function DeveloperDashboard() {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-[#E8E8E4] pt-16">
-        <Link href="/dashboard/developer/referrals" className="group">
-          <div className="flex justify-between items-start mb-4">
-            <p className="text-xs font-medium text-[#738276] uppercase tracking-widest">Total Rujukan</p>
-            <ArrowUpRight size={16} className="text-[#E8E8E4] group-hover:text-[#1C1C1A] transition-colors" />
-          </div>
-          <div className="flex items-baseline gap-3">
-            <span className="font-serif text-6xl text-[#1C1C1A]">{totalReferrals}</span>
-            <span className="text-sm text-[#4A4A48]">siswa</span>
-          </div>
-        </Link>
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-16 border-t border-[#E8E8E4] pt-16">
+        <div className="space-y-12">
+          <Link href="/dashboard/developer/referrals" className="group block">
+            <div className="flex justify-between items-start mb-4">
+              <p className="text-xs font-medium text-[#738276] uppercase tracking-widest">Total Rujukan Aktif</p>
+              <ArrowUpRight size={16} className="text-[#E8E8E4] group-hover:text-[#1C1C1A] transition-colors" />
+            </div>
+            <div className="flex items-baseline gap-3">
+              <span className="font-serif text-6xl text-[#1C1C1A]">{referralsData.filter(r => r.status !== 'settled').length}</span>
+              <span className="text-sm text-[#4A4A48]">siswa aktif</span>
+            </div>
+          </Link>
 
-        <div>
-          <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Dana Terakumulasi</p>
-          <div className="flex items-baseline gap-3">
-            <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">{formatCurrency(totalCommission)}</span>
+          <div>
+            <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Komisi Terbayar (Arsip)</p>
+            <div className="flex items-baseline gap-3">
+              <span className="font-serif text-5xl text-[#1C1C1A] tracking-tight">
+                {formatCurrency(referralsData.filter(r => r.status === 'settled').reduce((acc, curr) => acc + Number(curr.amount), 0))}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="md:col-span-2 mt-8">
+        <div className="bg-white p-8 rounded-3xl border border-[#E8E8E4]">
+          <div className="flex items-center gap-2 mb-8">
+            <TrendingUp size={18} className="text-[#1C1C1A]" />
+            <h3 className="text-sm font-medium text-[#1C1C1A]">Pertumbuhan Rujukan Baru</h3>
+          </div>
+          <TrendChart data={chartData} />
+        </div>
+
+        <div className="md:col-span-2">
           <Link href="/dashboard/payouts" className="group block h-card bg-[#F5F5F2] border-none">
             <div className="flex justify-between items-start sm:items-center gap-8">
               <div>
-                <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-3">Tertunda (Menunggu Pembayaran)</p>
+                <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-3">Total Piutang (Belum Cair)</p>
                 <h3 className="font-serif text-4xl text-[#B94A48]">{formatCurrency(totalPending)}</h3>
               </div>
               <ArrowUpRight size={24} className="text-[#E8E8E4] group-hover:text-[#B94A48] transition-colors" />

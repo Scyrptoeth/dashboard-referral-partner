@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Settings, X } from 'lucide-react';
 import { updateRewardConfigs } from '@/app/actions/mutations';
+import { toast } from 'sonner';
 
 type RewardConfig = {
   rank: number;
@@ -25,7 +26,9 @@ export default function RewardConfigEditor({ configs }: { configs: RewardConfig[
     
     if (result.error) {
       setError(result.error);
+      toast.error(result.error);
     } else {
+      toast.success('Konfigurasi reward berhasil diperbarui.');
       dialogRef.current?.close();
     }
     setLoading(false);
@@ -53,7 +56,7 @@ export default function RewardConfigEditor({ configs }: { configs: RewardConfig[
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="heading-3 text-[#1C1C1A]">Pengaturan Reward</h2>
-            <button type="button" onClick={() => dialogRef.current?.close()} className="text-[#738276] hover:text-[#1C1C1A]">
+            <button type="button" onClick={() => { dialogRef.current?.close(); setError(''); }} className="text-[#738276] hover:text-[#1C1C1A]">
               <X size={20} />
             </button>
           </div>
@@ -83,7 +86,7 @@ export default function RewardConfigEditor({ configs }: { configs: RewardConfig[
             </div>
 
             <div className="pt-4 flex justify-end gap-3">
-              <button type="button" onClick={() => dialogRef.current?.close()} className="px-4 py-2 text-sm font-medium text-[#4A4A48] hover:bg-[#F5F5F2] rounded-full transition-colors">
+              <button type="button" onClick={() => { dialogRef.current?.close(); setError(''); }} className="px-4 py-2 text-sm font-medium text-[#4A4A48] hover:bg-[#F5F5F2] rounded-full transition-colors">
                 Batal
               </button>
               <button type="submit" disabled={loading} className="h-btn bg-[#1C1C1A] text-white hover:bg-[#1C1C1A]/90 disabled:opacity-50 border-none">

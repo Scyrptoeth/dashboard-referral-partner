@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Toaster } from 'sonner';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -29,6 +30,16 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
   const isDeveloper = profile?.role === 'developer';
 
+  // Fetch unread feedback count if developer
+  let unreadCount = 0;
+  if (isDeveloper) {
+    const { count } = await supabase
+      .from('feedback')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_read', false);
+    unreadCount = count || 0;
+  }
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Sidebar Navigation */}
@@ -52,6 +63,14 @@ export default async function DashboardLayout({ children }: { children: ReactNod
               <Link href="/dashboard/developer/referrals" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
                 Data Rujukan
               </Link>
+              <Link href="/dashboard/developer/feedback" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors flex items-center justify-between group">
+                Kotak Masuk
+                {unreadCount > 0 && (
+                  <span className="flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-[#B94A48] text-white rounded-full group-hover:scale-110 transition-transform">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </Link>
             </>
           )}
 
@@ -59,11 +78,19 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             Pencairan Dana
           </Link>
 
+          <Link href="/dashboard/archive" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
+            Arsip Rujukan
+          </Link>
+
           {!isDeveloper && (
             <Link href="/dashboard/feedback" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
               Umpan Balik
             </Link>
           )}
+
+          <Link href="/dashboard/settings" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
+            Pengaturan
+          </Link>
         </nav>
 
         <div className="pt-12 mt-12 border-t border-[#E8E8E4]">
@@ -85,6 +112,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
 
       {/* Main Area */}
       <main className="flex-1 overflow-auto bg-[#FDFDFB]">
+        <Toaster richColors position="top-right" />
         <div className="p-8 md:p-16 max-w-5xl mx-auto">
           {children}
         </div>

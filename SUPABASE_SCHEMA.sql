@@ -73,6 +73,7 @@ CREATE TABLE reward_configs (
 CREATE TABLE feedback (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     content TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -133,11 +134,36 @@ ON reward_configs FOR UPDATE TO authenticated USING (
 -- Feedback:
 CREATE POLICY "Feedback: Authenticated insert"
 ON feedback FOR INSERT TO authenticated WITH CHECK (true);
-
-CREATE POLICY "Feedback: Developer view"
+-- Feedback: Developer view
+CREATE POLICY "Feedback: Developer view" 
 ON feedback FOR SELECT TO authenticated USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'developer')
 );
+
+-- RPC: Atomic Settlement
+CREATE OR REPLACE FUNCTION settle_partner_payments(
+  p_partner_id UUID,
+  p_referral_ids UUID[],
+  p_total_amount DECIMAL(12, 2)
+) RETURNS UUID AS $$
+DECLARE
+  v_payment_id UUID;
+BEGIN
+  -- 1. Insert into payments
+  INSERT INTO payments (partner_id, amount, status, paid_at)
+  VALUES (p_partner_id, p_total_amount, 'paid', NOW())
+  RETURNING id INTO v_payment_id;
+
+  -- 2. Update referrals
+  UPDATE referrals
+  SET status = 'settled',
+      payment_id = v_payment_id
+  WHERE id = ANY(p_referral_ids)
+    AND partner_id = p_partner_id;
+
+  RETURN v_payment_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Seed Reward Config
 INSERT INTO reward_configs (rank, percentage, description) VALUES

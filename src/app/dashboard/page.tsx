@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard | Persiapantubel',
+  description: 'Ringkasan performa dan rujukan mitra Persiapantubel.',
+};
+
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const supabase = createServerClient(

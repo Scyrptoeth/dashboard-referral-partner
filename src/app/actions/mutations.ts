@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
 /**
- * Fitur Manajemen Pencairan (Model Hybrid Detail)
+ * Fitur Manajemen Pencairan (Atomic RPC Transaction)
  */
 export async function settlePartnerPayments(partnerId: string, referralIds: string[], totalAmount: number) {
   const cookieStore = await cookies();
@@ -21,33 +21,20 @@ export async function settlePartnerPayments(partnerId: string, referralIds: stri
     }
   );
 
-  // 1. Catat di tabel payments sebagai riwayat pencairan
-  const { data: payment, error: paymentError } = await supabase.from('payments').insert({
-    partner_id: partnerId,
-    amount: totalAmount,
-    status: 'paid',
-    paid_at: new Date().toISOString()
-  }).select().single();
+  // Menggunakan RPC untuk transaksi atomik di level database
+  const { data: paymentId, error } = await supabase.rpc('settle_partner_payments', {
+    p_partner_id: partnerId,
+    p_referral_ids: referralIds,
+    p_total_amount: totalAmount
+  });
 
-  if (paymentError) return { error: paymentError.message };
-
-  // 2. Hubungkan rujukan yang dicairkan dengan ID pembayaran dan set status 'settled'
-  const { error: referralError } = await supabase
-    .from('referrals')
-    .update({ 
-      status: 'settled',
-      payment_id: payment.id 
-    })
-    .in('id', referralIds);
-
-  if (referralError) {
-    console.error('Failed to update referrals:', referralError);
-    // Optional: Kita bisa rollback payment di sini jika kritikal
-  }
+  if (error) return { error: error.message };
   
   revalidatePath('/dashboard/developer');
   revalidatePath('/dashboard/partner');
-  return { success: true, paymentId: payment.id };
+  revalidatePath('/dashboard/payouts');
+  
+  return { success: true, paymentId };
 }
 
 /**
@@ -107,5 +94,91 @@ export async function submitFeedback(content: string) {
 
   if (error) return { error: error.message };
 
+  return { success: true };
+}
+
+export async function deleteFeedback(id: string) {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+
+  const { error } = await supabase.from('feedback').delete().eq('id', id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath('/dashboard/developer/feedback');
+  return { success: true };
+}
+
+export async function markFeedbackAsRead(id: string) {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+
+  const { error } = await supabase.from('feedback').update({ is_read: true }).eq('id', id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath('/dashboard/developer/feedback');
+  revalidatePath('/dashboard');
+  return { success: true };
+}
+
+export async function updateReferral(referralId: string, updates: { pendaftar_name?: string; amount?: number; partner_id?: string }) {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+
+  // Check if caller is developer
+  const { data: { session } } = await supabase.auth.getSession();
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', session?.user.id).single();
+  
+  if (profile?.role !== 'developer') {
+    return { error: 'Otorisasi ditolak.' };
+  }
+
+  // Check if referral is already settled
+  const { data: referral } = await supabase.from('referrals').select('status').eq('id', referralId).single();
+  if (referral?.status === 'settled') {
+    return { error: 'Data yang sudah lunas tidak dapat diubah.' };
+  }
+
+  const { error } = await supabase
+    .from('referrals')
+    .update(updates)
+    .eq('id', referralId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath('/dashboard/developer/referrals');
+  revalidatePath('/dashboard/developer');
+  revalidatePath('/dashboard/partner');
   return { success: true };
 }

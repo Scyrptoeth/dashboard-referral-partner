@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Plus, X } from 'lucide-react';
 import { addReferral, registerPartner } from '@/app/actions/developer';
+import { toast } from 'sonner';
 
 type Partner = {
   id: string;
@@ -27,7 +28,9 @@ export default function DeveloperActions({ partners }: { partners: Partner[] }) 
     
     if (result.error) {
       setError(result.error);
+      toast.error(result.error);
     } else {
+      toast.success('Rujukan berhasil ditambahkan.');
       e.currentTarget.reset();
       referralDialogRef.current?.close();
     }
@@ -44,7 +47,9 @@ export default function DeveloperActions({ partners }: { partners: Partner[] }) 
     
     if (result.error) {
       setError(result.error);
+      toast.error(result.error);
     } else {
+      toast.success('Mitra berhasil didaftarkan.');
       e.currentTarget.reset();
       partnerDialogRef.current?.close();
     }

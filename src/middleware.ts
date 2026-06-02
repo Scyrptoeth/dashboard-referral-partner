@@ -64,6 +64,27 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
+    // Security Check: Verifikasi status is_active dari database secara real-time
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, is_active')
+      .eq('id', session.user.id)
+      .single();
+
+    // Jika profil tidak ditemukan atau dinonaktifkan
+    if (!profile || profile.is_active === false) {
+      // Kita tidak bisa memanggil auth.signOut() langsung di middleware Next.js secara efektif untuk session cookies,
+      // tapi kita bisa menghapus cookie atau me-redirect dengan instruksi menghapus sesi.
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('error', 'Akses ditangguhkan. Hubungi admin.');
+      
+      const res = NextResponse.redirect(loginUrl);
+      // Bersihkan session cookies
+      res.cookies.delete('sb-access-token');
+      res.cookies.delete('sb-refresh-token');
+      return res;
+    }
+
     // Role-based authorization
     if (request.nextUrl.pathname.startsWith('/dashboard/developer') && role !== 'developer') {
       return NextResponse.redirect(new URL('/dashboard/partner', request.url));

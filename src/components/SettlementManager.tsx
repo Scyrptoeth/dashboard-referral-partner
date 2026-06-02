@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, CheckCircle2, Loader2, Search } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { settlePartnerPayments } from '@/app/actions/mutations';
+import { toast } from 'sonner';
 
 type Referral = {
   id: string;
@@ -38,9 +39,9 @@ export default function SettlementManager({ data }: { data: PartnerSummary[] }) 
     const result = await settlePartnerPayments(partner.id, referralIds, partner.total_pending);
     
     if (result.error) {
-      alert('Gagal memproses: ' + result.error);
+      toast.error('Gagal memproses: ' + result.error);
     } else {
-      alert('Pembayaran berhasil dicatat.');
+      toast.success('Pembayaran berhasil dicatat.');
     }
     setLoading(null);
   };

@@ -64,7 +64,7 @@ export default async function FeedbackPage() {
     <div className="max-w-xl mx-auto space-y-12">
       <header>
         <h1 className="heading-1 text-[#1C1C1A] mb-4">Kirim Umpan Balik</h1>
-        <p className="text-[#738276]">Suara Anda penting bagi kami. Kirimkan saran atau kendala Anda secara anonim.</p>
+        <p className="text-[#738276]">Suara Kamu penting bagi kami. Kirimkan saran atau kendala Kamu secara anonim.</p>
       </header>
       <FeedbackForm />
     </div>

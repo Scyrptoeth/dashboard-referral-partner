@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { formatDate } from '@/lib/utils';
 import DeveloperActions from '@/components/DeveloperActions';
+import PartnerAdminTools from '@/components/PartnerAdminTools';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Kelola Mitra | Persiapantubel',
+};
 
 export default async function ManagePartnersPage() {
   const cookieStore = await cookies();
@@ -41,6 +48,7 @@ export default async function ManagePartnersPage() {
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">WhatsApp</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Bergabung</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Status</th>
+                <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E8E8E4]">
@@ -50,15 +58,22 @@ export default async function ManagePartnersPage() {
                   <td className="py-5 px-6 text-sm text-[#4A4A48]">{p.whatsapp}</td>
                   <td className="py-5 px-6 text-sm text-[#738276]">{formatDate(p.created_at)}</td>
                   <td className="py-5 px-6">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-[#4A7356]/10 text-[#4A7356]">
-                      Aktif
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                      p.is_active ? 'bg-[#4A7356]/10 text-[#4A7356]' : 'bg-[#B94A48]/10 text-[#B94A48]'
+                    }`}>
+                      {p.is_active ? 'Aktif' : 'Nonaktif'}
                     </span>
+                  </td>
+                  <td className="py-5 px-6 text-right">
+                    <div className="flex justify-end">
+                      <PartnerAdminTools partner={{ id: p.id, full_name: p.full_name, is_active: p.is_active }} />
+                    </div>
                   </td>
                 </tr>
               ))}
               {(!partners || partners.length === 0) && (
                 <tr>
-                  <td colSpan={4} className="py-12 text-center text-sm text-[#738276] italic">Belum ada mitra yang terdaftar.</td>
+                  <td colSpan={5} className="py-12 text-center text-sm text-[#738276] italic">Belum ada mitra yang terdaftar.</td>
                 </tr>
               )}
             </tbody>

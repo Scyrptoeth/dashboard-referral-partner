@@ -3,27 +3,24 @@
 import { useState } from 'react';
 import { Send, Loader2, MessageSquare } from 'lucide-react';
 import { submitFeedback } from '@/app/actions/mutations';
+import { toast } from 'sonner';
 
 export default function FeedbackForm() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
 
     setLoading(true);
-    setError(null);
-    setSuccess(false);
 
     const result = await submitFeedback(content);
 
     if (result.error) {
-      setError(result.error);
+      toast.error(result.error);
     } else {
-      setSuccess(true);
+      toast.success('Pesan Kamu telah terkirim secara anonim.');
       setContent('');
     }
     setLoading(false);
@@ -37,7 +34,7 @@ export default function FeedbackForm() {
         </div>
         <div>
           <h3 className="font-medium text-[#1C1C1A]">Umpan Balik Anonim</h3>
-          <p className="text-xs text-[#738276]">Saran atau kendala Anda terkirim secara anonim.</p>
+          <p className="text-xs text-[#738276]">Saran atau kendala Kamu terkirim secara anonim.</p>
         </div>
       </div>
 
@@ -45,17 +42,10 @@ export default function FeedbackForm() {
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Tuliskan pesan Anda di sini..."
+          placeholder="Tuliskan pesan Kamu di sini..."
           className="h-input min-h-[120px] bg-white border-transparent focus:border-[#1C1C1A] transition-all resize-none"
           required
         />
-
-        {error && <p className="text-sm text-[#B94A48] animate-in fade-in">{error}</p>}
-        {success && (
-          <p className="text-sm text-[#4A7356] font-medium animate-in fade-in">
-            Terima kasih! Pesan Anda telah terkirim secara anonim.
-          </p>
-        )}
 
         <button
           type="submit"

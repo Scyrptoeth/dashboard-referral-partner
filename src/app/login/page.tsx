@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Masuk Akun | Persiapantubel',
+  description: 'Masuk ke dashboard mitra referral Persiapantubel.',
+};
+
 export default function LoginPage() {
   const [whatsapp, setWhatsapp] = useState('');
   const [password, setPassword] = useState('');
@@ -42,7 +49,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[400px]">
         <div className="mb-12 text-center">
           <h1 className="heading-2 text-[#1C1C1A] mb-3">Selamat datang.</h1>
-          <p className="text-[#738276] text-sm">Masuk ke portal kemitraan Anda.</p>
+          <p className="text-[#738276] text-sm">Masuk ke portal kemitraan Kamu.</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
