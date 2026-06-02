@@ -77,6 +77,16 @@ export async function registerPartner(formData: FormData) {
 
   const email = `${validated.data.whatsapp}@persiapantubel.com`;
 
+  const { data: existingProfile } = await supabaseAdmin
+    .from('profiles')
+    .select('id')
+    .eq('whatsapp', validated.data.whatsapp)
+    .maybeSingle();
+
+  if (existingProfile) {
+    return { error: 'Nomor WhatsApp ini sudah terdaftar sebagai mitra.' };
+  }
+
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
     email,
     password: validated.data.password,
@@ -103,7 +113,16 @@ export async function registerPartner(formData: FormData) {
   }
 
   revalidatePath('/dashboard/developer');
-  return { success: true };
+  revalidatePath('/dashboard/developer/partners');
+  return {
+    success: true,
+    message: `Mitra ${validated.data.full_name} berhasil didaftarkan.`,
+    partner: {
+      id: authData.user.id,
+      whatsapp: validated.data.whatsapp,
+      full_name: validated.data.full_name,
+    },
+  };
 }
 
 export async function adminUpdatePartner(partnerId: string, updates: { password?: string; is_active?: boolean }) {

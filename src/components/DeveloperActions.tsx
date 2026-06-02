@@ -15,45 +15,62 @@ export default function DeveloperActions({ partners }: { partners: Partner[] }) 
   const referralDialogRef = useRef<HTMLDialogElement>(null);
   const partnerDialogRef = useRef<HTMLDialogElement>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [referralLoading, setReferralLoading] = useState(false);
+  const [partnerLoading, setPartnerLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleAddReferral = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setReferralLoading(true);
     setError('');
     
-    const formData = new FormData(e.currentTarget);
-    const result = await addReferral(formData);
-    
-    if (result.error) {
-      setError(result.error);
-      toast.error(result.error);
-    } else {
-      toast.success('Rujukan berhasil ditambahkan.');
-      e.currentTarget.reset();
-      referralDialogRef.current?.close();
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const result = await addReferral(formData);
+      
+      if (result?.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success('Rujukan berhasil ditambahkan.');
+        form.reset();
+        referralDialogRef.current?.close();
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Rujukan gagal disimpan. Silakan coba lagi.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setReferralLoading(false);
     }
-    setLoading(false);
   };
 
   const handleRegisterPartner = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setPartnerLoading(true);
     setError('');
     
-    const formData = new FormData(e.currentTarget);
-    const result = await registerPartner(formData);
-    
-    if (result.error) {
-      setError(result.error);
-      toast.error(result.error);
-    } else {
-      toast.success('Mitra berhasil didaftarkan.');
-      e.currentTarget.reset();
-      partnerDialogRef.current?.close();
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const result = await registerPartner(formData);
+      
+      if (result?.error) {
+        setError(result.error);
+        toast.error(result.error);
+      } else {
+        toast.success(result?.message || 'Mitra berhasil didaftarkan.');
+        form.reset();
+        partnerDialogRef.current?.close();
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Mitra gagal didaftarkan. Silakan coba lagi.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setPartnerLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -111,8 +128,8 @@ export default function DeveloperActions({ partners }: { partners: Partner[] }) 
               <button type="button" onClick={() => { referralDialogRef.current?.close(); setError(''); }} className="px-4 py-2 text-sm font-medium text-[#4A4A48] hover:bg-[#F5F5F2] rounded-full transition-colors">
                 Batal
               </button>
-              <button type="submit" disabled={loading} className="h-btn bg-[#1C1C1A] text-white hover:bg-[#1C1C1A]/90 disabled:opacity-50 border-none">
-                {loading ? 'Menyimpan...' : 'Simpan Rujukan'}
+              <button type="submit" disabled={referralLoading} className="h-btn bg-[#1C1C1A] text-white hover:bg-[#1C1C1A]/90 disabled:opacity-50 border-none">
+                {referralLoading ? 'Menyimpan...' : 'Simpan Rujukan'}
               </button>
             </div>
           </form>
@@ -146,8 +163,8 @@ export default function DeveloperActions({ partners }: { partners: Partner[] }) 
               <button type="button" onClick={() => { partnerDialogRef.current?.close(); setError(''); }} className="px-4 py-2 text-sm font-medium text-[#4A4A48] hover:bg-[#F5F5F2] rounded-full transition-colors">
                 Batal
               </button>
-              <button type="submit" disabled={loading} className="h-btn bg-[#1C1C1A] text-white hover:bg-[#1C1C1A]/90 disabled:opacity-50 border-none">
-                {loading ? 'Mendaftarkan...' : 'Daftarkan Mitra'}
+              <button type="submit" disabled={partnerLoading} className="h-btn bg-[#1C1C1A] text-white hover:bg-[#1C1C1A]/90 disabled:opacity-50 border-none">
+                {partnerLoading ? 'Mendaftarkan...' : 'Daftarkan Mitra'}
               </button>
             </div>
           </form>
