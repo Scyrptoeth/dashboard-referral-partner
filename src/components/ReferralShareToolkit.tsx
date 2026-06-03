@@ -200,7 +200,7 @@ export default function ReferralShareToolkit({ partnerName, whatsapp, initialTem
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-[#E8E8E4] overflow-hidden">
+    <div className="w-full overflow-hidden rounded-3xl border border-[#E8E8E4] bg-white">
       <div className="flex border-b border-[#E8E8E4]">
         {tabs.map((tab) => (
           <button
@@ -219,8 +219,8 @@ export default function ReferralShareToolkit({ partnerName, whatsapp, initialTem
         ))}
       </div>
 
-      <div className="grid gap-0 lg:grid-cols-[280px_1fr]">
-        <aside className="border-b border-[#E8E8E4] bg-[#FDFDFB] p-5 lg:border-b-0 lg:border-r">
+      <div className="grid min-w-0 gap-0 2xl:grid-cols-[320px_minmax(0,1fr)]">
+        <aside className="min-w-0 border-b border-[#E8E8E4] bg-[#FDFDFB] p-5 2xl:border-b-0 2xl:border-r">
           <div className="mb-4 flex items-center justify-between gap-3">
             <p className="text-xs font-medium uppercase tracking-widest text-[#738276]">Daftar Template</p>
             <button
@@ -265,7 +265,7 @@ export default function ReferralShareToolkit({ partnerName, whatsapp, initialTem
           </div>
         </aside>
 
-        <div className="space-y-6 p-6 md:p-8">
+        <div className="min-w-0 space-y-6 p-5 md:p-8">
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
             <label className="space-y-2">
               <span className="text-xs font-medium uppercase tracking-widest text-[#738276]">Nama Template</span>
@@ -322,7 +322,7 @@ export default function ReferralShareToolkit({ partnerName, whatsapp, initialTem
                 Salin
               </button>
             </div>
-            <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-[#1C1C1A]">
+            <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-all font-sans text-sm leading-relaxed text-[#1C1C1A]">
               {output}
             </pre>
           </div>

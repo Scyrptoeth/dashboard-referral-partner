@@ -93,9 +93,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       </aside>
 
       {/* Main Area */}
-      <main className="flex-1 overflow-auto bg-[#FDFDFB]">
+      <main className="min-w-0 flex-1 overflow-auto bg-[#FDFDFB]">
         <Toaster richColors position="top-right" />
-        <div className="p-8 md:p-16 max-w-5xl mx-auto">
+        <div className="w-full p-6 md:p-10 xl:p-12 2xl:p-16">
           {children}
         </div>
       </main>
