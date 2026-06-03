@@ -52,7 +52,7 @@ export default function SettlementManager({ data }: { data: PartnerSummary[] }) 
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#738276]" size={18} />
         <input 
           type="text" 
-          placeholder="Cari nama mitra atau WhatsApp..." 
+          placeholder="Cari nama partner atau WhatsApp..." 
           className="h-input pl-12"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -99,7 +99,7 @@ export default function SettlementManager({ data }: { data: PartnerSummary[] }) 
             {/* Detail Referrals (Accordion) */}
             {expandedPartner === partner.id && (
               <div className="bg-[#FDFDFB] border-t border-[#E8E8E4] p-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                <h4 className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Rincian Rujukan yang Belum Dibayar</h4>
+                <h4 className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Rincian Referral yang Belum Dibayar</h4>
                 <div className="space-y-3">
                   {partner.referrals.map((ref) => (
                     <div key={ref.id} className="flex justify-between items-center text-sm py-2 border-b border-[#E8E8E4]/50 last:border-none">
@@ -118,7 +118,7 @@ export default function SettlementManager({ data }: { data: PartnerSummary[] }) 
 
         {filteredData.length === 0 && (
           <div className="text-center py-24 bg-[#F5F5F2] rounded-2xl border-2 border-dashed border-[#E8E8E4]">
-            <p className="text-[#738276] italic">Tidak ada mitra dengan piutang tertunda.</p>
+            <p className="text-[#738276] italic">Tidak ada partner dengan piutang tertunda.</p>
           </div>
         )}
       </div>

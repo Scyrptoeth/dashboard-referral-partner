@@ -40,10 +40,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           {isDeveloper && (
             <>
               <Link href="/dashboard/developer/partners" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
-                Kelola Mitra
+                Kelola Partner
               </Link>
               <Link href="/dashboard/developer/referrals" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
-                Data Rujukan
+                Data Referral
               </Link>
               <Link href="/dashboard/developer/feedback" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors flex items-center justify-between group">
                 Kotak Masuk
@@ -61,7 +61,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           </Link>
 
           <Link href="/dashboard/archive" className="text-sm text-[#4A4A48] hover:text-[#1C1C1A] transition-colors">
-            Arsip Rujukan
+            Arsip Referral
           </Link>
 
           {!isDeveloper && (

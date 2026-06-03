@@ -6,7 +6,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase-server';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Kelola Mitra | Persiapantubel',
+  title: 'Kelola Partner | Persiapantubel',
 };
 
 export default async function ManagePartnersPage() {
@@ -22,8 +22,8 @@ export default async function ManagePartnersPage() {
     <div className="space-y-12">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="heading-1 text-[#1C1C1A] mb-4">Kelola Mitra</h1>
-          <p className="text-[#738276]">Daftar mitra aktif yang terdaftar dalam program referral.</p>
+          <h1 className="heading-1 text-[#1C1C1A] mb-4">Kelola Partner</h1>
+          <p className="text-[#738276]">Daftar partner aktif yang terdaftar dalam program referral.</p>
         </div>
       </header>
 
@@ -32,7 +32,7 @@ export default async function ManagePartnersPage() {
           <table className="w-full text-left">
             <thead className="bg-[#F5F5F2] border-b border-[#E8E8E4]">
               <tr>
-                <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Nama Mitra</th>
+                <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Nama Partner</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">WhatsApp</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Bergabung</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Status</th>
@@ -61,7 +61,7 @@ export default async function ManagePartnersPage() {
               ))}
               {(!partners || partners.length === 0) && (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-sm text-[#738276] italic">Belum ada mitra yang terdaftar.</td>
+                  <td colSpan={5} className="py-12 text-center text-sm text-[#738276] italic">Belum ada partner yang terdaftar.</td>
                 </tr>
               )}
             </tbody>
@@ -70,7 +70,7 @@ export default async function ManagePartnersPage() {
       </section>
 
       <section className="pt-12 border-t border-[#E8E8E4]">
-        <h2 className="heading-2 text-[#1C1C1A] mb-8">Tambah Mitra Baru</h2>
+        <h2 className="heading-2 text-[#1C1C1A] mb-8">Tambah Partner Baru</h2>
         <div className="max-w-md">
           <DeveloperActions partners={[]} /> {/* Only register part will be used */}
         </div>

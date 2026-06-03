@@ -4,7 +4,7 @@ import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supab
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Arsip Rujukan | Persiapantubel',
+  title: 'Arsip Referral | Persiapantubel',
 };
 
 export default async function ArchivePage() {
@@ -27,9 +27,9 @@ export default async function ArchivePage() {
   return (
     <div className="space-y-16 pb-24">
       <header className="max-w-2xl">
-        <h1 className="heading-1 text-[#1C1C1A] mb-6">Arsip Rujukan</h1>
+        <h1 className="heading-1 text-[#1C1C1A] mb-6">Arsip Referral</h1>
         <p className="text-lg text-[#738276] leading-relaxed">
-          Histori seluruh rujukan yang telah berhasil dicairkan dan berstatus lunas.
+          Histori seluruh referral yang telah berhasil dicairkan dan berstatus lunas.
         </p>
       </header>
 
@@ -40,8 +40,8 @@ export default async function ArchivePage() {
               <thead className="bg-[#F5F5F2] border-b border-[#E8E8E4]">
                 <tr>
                   <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Pendaftar</th>
-                  {isDeveloper && <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Mitra</th>}
-                  <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Tgl Rujukan</th>
+                  {isDeveloper && <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Partner</th>}
+                  <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Tgl Referral</th>
                   <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Tgl Lunas</th>
                   <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest text-right">Komisi</th>
                 </tr>
@@ -67,7 +67,7 @@ export default async function ArchivePage() {
                 })}
                 {(!settledReferrals || settledReferrals.length === 0) && (
                   <tr>
-                    <td colSpan={isDeveloper ? 5 : 4} className="py-12 text-center text-sm text-[#738276] italic">Belum ada rujukan yang lunas.</td>
+                    <td colSpan={isDeveloper ? 5 : 4} className="py-12 text-center text-sm text-[#738276] italic">Belum ada referral yang lunas.</td>
                   </tr>
                 )}
               </tbody>

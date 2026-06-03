@@ -58,7 +58,7 @@ export default function TrendChart({ data }: { data: ChartData[] }) {
             strokeWidth={2}
             fillOpacity={1} 
             fill="url(#colorCount)" 
-            name="Rujukan"
+            name="Referral"
           />
         </AreaChart>
       </ResponsiveContainer>

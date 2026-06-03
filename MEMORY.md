@@ -75,3 +75,57 @@ Dokumen ini mencatat riwayat pengembangan, *lessons learned*, dan rencana kerja 
 3. **[Prioritas 3] Referral Fraud Prevention:** Menambahkan pengecekan duplikasi pendaftar pada server action rujukan untuk menjaga integritas data.
 
 ---
+
+## Log Tanggal: 3 Juni 2026
+
+### 1. Rangkuman Pekerjaan Terkini
+- **Otentikasi & Manajemen Sesi:** 
+    - Menyelesaikan bug **Logout 404** dengan membuat *route handler* `src/app/auth/signout/route.ts` yang menangani pembersihan sesi server-side secara benar.
+    - Memperbaiki **Infinite Redirect Loop** dan "Session Desync" di middleware dengan bermigrasi dari `getSession()` (yang rentan terhadap sesi basi/stale) ke **`getUser()`** untuk validasi identitas dan JWT token secara *real-time* ke server Supabase.
+    - Memastikan middleware mengambil rujukan peran (role) langsung dari database (`profiles`), menghindari konflik dengan *user metadata* lama.
+- **Perbaikan Stabilitas Build (Vercel):**
+    - Mendeteksi dan menginstal dependensi produksi yang hilang namun digunakan dalam kode (Missing Dependencies: `zod`, `sonner`, `recharts`), mencegah kegagalan build statis/dinamis di lingkungan Vercel.
+    - Mengatasi isu TypeScript dan linting (ESLint) seperti *type mismatch* pada `.reduce()`, error *ZodError.issues*, dan *unescaped entities* di file komponen antarmuka.
+    - Memindahkan ekspor `metadata` dari Client Component ke Server Component (Layout) pada halaman login untuk memenuhi aturan arsitektur Next.js (App Router).
+- **Penyesuaian Tone Komunikasi (Brand Voice):**
+    - Mengganti seluruh sapaan kaku "Anda" menjadi **"Kamu"** secara menyeluruh di 15 titik *source code* (Dashboard, Pengaturan, Alat Promosi, Login, Umpan Balik) demi menjaga nuansa keakraban relasi antara Persiapantubel dan mitra referral.
+- **Pemulihan Hak Akses (Diagnostic & Fix):**
+    - Menganalisa dan menuntaskan anomali *Akun Ditangguhkan/Tidak Ditemukan* di Vercel dengan menyusun skrip *Seed/Diagnostic* (`audit-db.ts` & `check-and-fix-auth.ts`).
+    - Menyinkronkan secara paksa Supabase Auth ID dengan tabel `profiles` secara langsung dari Vercel/Node environment, yang berhasil mengaktifkan kembali peran Developer untuk nomor WhatsApp `082294116001`.
+
+### 2. Evaluasi Lesson Learned (Wawasan Penting)
+- **getUser() vs getSession():** Dalam Next.js App Router (khususnya middleware keamanan), selalu gunakan `getUser()` untuk memastikan kepastian identitas yang divalidasi oleh server. Penggunaan `getSession()` berisiko menimbulkan *race conditions* dan *infinite redirect loops* jika cookie yang tersimpan di klien kedaluwarsa atau dimanipulasi.
+- **Global Dependencies Trap:** Sangat krusial untuk rutin mengaudit dan mendeklarasikan paket dalam `package.json` yang sering kali luput terdeteksi pada *local dev environment* karena bergantung pada tembolok *node_modules* yang ada secara kebetulan/global. Kesalahan ini langsung memicu kegagalan di *CI/CD pipeline* seperti Vercel.
+
+### 3. Peta Risiko & Hutang Teknis (Tech Debt)
+- **Supabase Local State:** Skema RLS database `profiles` kini lebih longgar terhadap `authenticated` guna mendukung verifikasi awal oleh middleware. Diperlukan pengawasan jika model data mitra kelak menjadi sangat besar.
+
+### 4. Rumusan Next Action (Tindakan Berikutnya)
+1. **[Prioritas 1] Pengujian Beban Autentikasi:** Mendaftarkan pengguna profil "Partner" biasa guna menjamin fungsionalitas pemisahan role Developer vs Partner berfungsi paripurna tanpa *redirect* nyasar.
+2. **[Prioritas 2] Ekspor Data (Laporan CSV/PDF):** Menyediakan fitur bagi Developer untuk mengunduh laporan payout dan referral untuk pembukuan bulanan.
+3. **[Prioritas 3] Pencarian Tabel:** Implementasi fitur "Search/Filter" global di halaman Admin Partner dan Admin Referrals guna memudahkan operasi pengelolaan manual.
+
+---
+
+## Log Tanggal: 3 Juni 2026 - Sesi Perbaikan Layout 100% Browser
+
+### 1. Rangkuman Pekerjaan Terkini
+- **Perbaikan Layout Dashboard Partner:** Menghapus batas `max-w-5xl mx-auto` pada wrapper utama dashboard dan menggantinya dengan container full-width responsif (`w-full`, padding bertingkat, dan `min-w-0`) agar tampilan browser 100% tidak lagi menyisakan ruang kosong besar di kiri dan kanan.
+- **Perbaikan UX Referral Share Toolkit:** Menyesuaikan `ReferralShareToolkit` agar panel daftar template dan editor promo tidak memaksa layout dua kolom pada ruang yang sempit. Layout kini stack ke bawah sampai breakpoint `2xl`, lalu baru memakai dua kolom ketika ruang layar cukup.
+- **Pencegahan Overflow Horizontal:** Menambahkan `min-w-0` pada grid dan panel editor, serta mengganti preview output menjadi `break-all` agar URL WhatsApp panjang tidak memotong tampilan atau membutuhkan scroll kanan halaman.
+- **GitHub & Vercel Production:** Commit `feae3e0` (`fix(dashboard): improve responsive promo layout`) berhasil di-merge ke `main`, push ke GitHub sukses, dan deployment production Vercel terbaru berstatus **Ready**. Alias live: `https://partner-persiapantubel.vercel.app`.
+
+### 2. Evaluasi Lesson Learned (Wawasan Penting)
+- **Responsive Dashboard Tidak Cukup Dengan Max-Width:** Untuk dashboard operasional, container yang terlalu sempit dapat membuat layar besar terasa kosong dan mengurangi efisiensi visual. Wrapper utama perlu mengikuti lebar area kerja sambil tetap menjaga padding yang proporsional.
+- **Breakpoint Dua Kolom Harus Berdasar Ruang Nyata:** Komponen editor yang memiliki textarea, input, tombol aksi, dan preview panjang lebih aman dibuat stack pada layar sedang. Dua kolom baru ideal ketika lebar efektif benar-benar cukup, bukan hanya karena sudah masuk breakpoint desktop standar.
+
+### 3. Peta Risiko & Hutang Teknis (Tech Debt)
+- **Verifikasi Visual Terproteksi Login:** Verifikasi dashboard aktual dengan akun partner production belum dilakukan karena kredensial tidak tersedia dan tidak aman untuk menebak/mengubah akun. Verifikasi dilakukan melalui build, lint, dan Playwright fixture berbasis CSS build untuk memvalidasi overflow serta perilaku responsif.
+- **Vercel SSO Pada Deployment Hash:** URL deployment hash Vercel mengembalikan proteksi SSO/401, tetapi alias production `partner-persiapantubel.vercel.app` merespons normal dan mengarahkan user belum login ke `/login`.
+
+### 4. Rumusan Next Action (Tindakan Berikutnya)
+1. **[Prioritas 1] Verifikasi UI Dengan Akun Partner Nyata:** Login ke production sebagai Partner dan cek langsung halaman `/dashboard/partner` pada browser 100%, 125%, tablet, dan mobile.
+2. **[Prioritas 2] Audit Responsif Halaman Developer:** Terapkan pola `min-w-0`, wrapping, dan layout stack yang sama pada tabel/komponen developer yang berisiko overflow horizontal.
+3. **[Prioritas 3] Dokumentasikan Baseline Screenshot:** Simpan screenshot before/after terkurasi untuk regresi visual layout dashboard berikutnya.
+
+---

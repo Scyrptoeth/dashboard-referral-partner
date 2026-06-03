@@ -89,7 +89,7 @@ export default async function PartnerDashboard() {
         <div className="max-w-3xl">
           <h1 className="heading-1 text-[#1C1C1A] mb-6">Pencapaian Kamu</h1>
           <p className="text-lg text-[#738276] leading-relaxed">
-            Terima kasih atas kontribusi Kamu, <span className="text-[#1C1C1A] font-medium">{profile?.full_name}</span>. Di bawah ini adalah ringkasan rujukan dan komisi yang Kamu hasilkan.
+            Terima kasih atas kontribusi Kamu, <span className="text-[#1C1C1A] font-medium">{profile?.full_name}</span>. Di bawah ini adalah ringkasan referral dan komisi yang Kamu hasilkan.
           </p>
         </div>
       </header>
@@ -106,7 +106,7 @@ export default async function PartnerDashboard() {
 
         <div className="space-y-12">
           <div>
-            <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Rujukan Periode Ini</p>
+            <p className="text-xs font-medium text-[#738276] uppercase tracking-widest mb-4">Referral Periode Ini</p>
             <div className="flex items-baseline gap-3">
               <span className="font-serif text-7xl text-[#1C1C1A]">{totalReferrals}</span>
             </div>
@@ -126,7 +126,7 @@ export default async function PartnerDashboard() {
         <div className="bg-white p-8 rounded-3xl border border-[#E8E8E4]">
           <div className="flex items-center gap-2 mb-8">
             <TrendingUp size={18} className="text-[#1C1C1A]" />
-            <h3 className="text-sm font-medium text-[#1C1C1A]">Tren Rujukan</h3>
+            <h3 className="text-sm font-medium text-[#1C1C1A]">Tren Referral</h3>
           </div>
           <TrendChart data={chartData} />
         </div>
@@ -183,7 +183,7 @@ export default async function PartnerDashboard() {
               </div>
             ))}
             {allReferrals.length === 0 && (
-              <p className="text-sm text-[#738276] italic py-12 text-center border-2 border-dashed border-[#E8E8E4] rounded-2xl">Belum ada rujukan.</p>
+              <p className="text-sm text-[#738276] italic py-12 text-center border-2 border-dashed border-[#E8E8E4] rounded-2xl">Belum ada referral.</p>
             )}
           </div>
         </div>

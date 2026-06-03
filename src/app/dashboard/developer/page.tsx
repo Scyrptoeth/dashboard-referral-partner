@@ -20,7 +20,7 @@ export default async function DeveloperDashboard() {
   const partnersData = partnerRes.data || [];
   const referralsData = referralsRes.data || [];
   
-  // Piutang tertunda: rujukan yang belum berstatus 'settled'
+  // Piutang tertunda: referral yang belum berstatus 'settled'
   const totalPending = pendingRes.data?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
   // Agregasi Data untuk Chart (7 hari terakhir)
@@ -39,7 +39,7 @@ export default async function DeveloperDashboard() {
       <header className="max-w-2xl">
         <h1 className="heading-1 text-[#1C1C1A] mb-6">Tinjauan Kinerja</h1>
         <p className="text-lg text-[#738276] leading-relaxed">
-          Pantau pertumbuhan ekosistem kemitraan. Saat ini terdapat <span className="text-[#1C1C1A] font-medium">{partnerCount} mitra aktif</span> yang berkontribusi pada jaringan Persiapantubel.
+          Pantau pertumbuhan ekosistem kemitraan. Saat ini terdapat <span className="text-[#1C1C1A] font-medium">{partnerCount} partner aktif</span> yang berkontribusi pada jaringan Persiapantubel.
         </p>
       </header>
 
@@ -47,7 +47,7 @@ export default async function DeveloperDashboard() {
         <div className="space-y-12">
           <Link href="/dashboard/developer/referrals" className="group block">
             <div className="flex justify-between items-start mb-4">
-              <p className="text-xs font-medium text-[#738276] uppercase tracking-widest">Total Rujukan Aktif</p>
+              <p className="text-xs font-medium text-[#738276] uppercase tracking-widest">Total Referral Aktif</p>
               <ArrowUpRight size={16} className="text-[#E8E8E4] group-hover:text-[#1C1C1A] transition-colors" />
             </div>
             <div className="flex items-baseline gap-3">
@@ -69,7 +69,7 @@ export default async function DeveloperDashboard() {
         <div className="bg-white p-8 rounded-3xl border border-[#E8E8E4]">
           <div className="flex items-center gap-2 mb-8">
             <TrendingUp size={18} className="text-[#1C1C1A]" />
-            <h3 className="text-sm font-medium text-[#1C1C1A]">Pertumbuhan Rujukan Baru</h3>
+            <h3 className="text-sm font-medium text-[#1C1C1A]">Pertumbuhan Referral Baru</h3>
           </div>
           <TrendChart data={chartData} />
         </div>

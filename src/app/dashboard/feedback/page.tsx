@@ -17,7 +17,7 @@ export default async function FeedbackPage() {
       <div className="space-y-12">
         <header>
           <h1 className="heading-1 text-[#1C1C1A] mb-4">Umpan Balik Masuk</h1>
-          <p className="text-[#738276]">Daftar saran dan masukan anonim dari para mitra.</p>
+          <p className="text-[#738276]">Daftar saran dan masukan anonim dari para partner.</p>
         </header>
 
         <div className="grid gap-6">

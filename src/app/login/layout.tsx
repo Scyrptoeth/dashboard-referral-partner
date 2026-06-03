@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Masuk Akun | Persiapantubel',
-  description: 'Masuk ke dashboard mitra referral Persiapantubel.',
+  description: 'Masuk ke dashboard partner referral Persiapantubel.',
 };
 
 export default function LoginLayout({

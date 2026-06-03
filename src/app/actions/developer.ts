@@ -7,7 +7,7 @@ import { createSupabaseAdminClient, getCurrentUserAndProfile } from '@/lib/supab
 const phoneRegex = /^(08|628)[0-9]{8,13}$/;
 
 const referralSchema = z.object({
-  partner_id: z.string().uuid('ID Mitra tidak valid'),
+  partner_id: z.string().uuid('ID Partner tidak valid'),
   pendaftar_name: z.string().min(3, 'Nama pendaftar minimal 3 karakter').trim(),
   amount: z.coerce.number().min(1, 'Nominal komisi harus lebih dari 0'),
 });
@@ -84,7 +84,7 @@ export async function registerPartner(formData: FormData) {
     .maybeSingle();
 
   if (existingProfile) {
-    return { error: 'Nomor WhatsApp ini sudah terdaftar sebagai mitra.' };
+    return { error: 'Nomor WhatsApp ini sudah terdaftar sebagai partner.' };
   }
 
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -116,7 +116,7 @@ export async function registerPartner(formData: FormData) {
   revalidatePath('/dashboard/developer/partners');
   return {
     success: true,
-    message: `Mitra ${validated.data.full_name} berhasil didaftarkan.`,
+    message: `Partner ${validated.data.full_name} berhasil didaftarkan.`,
     partner: {
       id: authData.user.id,
       whatsapp: validated.data.whatsapp,

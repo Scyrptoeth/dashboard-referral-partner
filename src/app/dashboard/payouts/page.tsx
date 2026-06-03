@@ -46,7 +46,7 @@ export default async function PayoutsPage() {
       <div className="space-y-12">
         <header>
           <h1 className="heading-1 text-[#1C1C1A] mb-4">Manajemen Pencairan</h1>
-          <p className="text-[#738276]">Proses pembayaran komisi kepada mitra yang memiliki piutang aktif.</p>
+          <p className="text-[#738276]">Proses pembayaran komisi kepada partner yang memiliki piutang aktif.</p>
         </header>
         <SettlementManager data={settlementData} />
       </div>

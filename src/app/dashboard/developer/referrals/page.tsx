@@ -6,7 +6,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase-server';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Data Rujukan | Persiapantubel',
+  title: 'Data Referral | Persiapantubel',
 };
 
 export default async function DataReferralsPage() {
@@ -27,8 +27,8 @@ export default async function DataReferralsPage() {
     <div className="space-y-12">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="heading-1 text-[#1C1C1A] mb-4">Data Rujukan</h1>
-          <p className="text-[#738276]">Seluruh riwayat pendaftaran siswa melalui kode referral mitra.</p>
+          <h1 className="heading-1 text-[#1C1C1A] mb-4">Data Referral</h1>
+          <p className="text-[#738276]">Seluruh riwayat pendaftaran siswa melalui kode referral partner.</p>
         </div>
       </header>
 
@@ -38,7 +38,7 @@ export default async function DataReferralsPage() {
             <thead className="bg-[#F5F5F2] border-b border-[#E8E8E4]">
               <tr>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Pendaftar</th>
-                <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Mitra</th>
+                <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Partner</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Tanggal</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest">Status</th>
                 <th className="py-4 px-6 text-xs font-medium text-[#738276] uppercase tracking-widest text-right">Komisi</th>
@@ -72,7 +72,7 @@ export default async function DataReferralsPage() {
               })}
               {referrals.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-sm text-[#738276] italic">Belum ada data rujukan.</td>
+                  <td colSpan={6} className="py-12 text-center text-sm text-[#738276] italic">Belum ada data referral.</td>
                 </tr>
               )}
             </tbody>
@@ -81,7 +81,7 @@ export default async function DataReferralsPage() {
       </section>
 
       <section className="pt-12 border-t border-[#E8E8E4]">
-        <h2 className="heading-2 text-[#1C1C1A] mb-8">Input Rujukan Baru</h2>
+        <h2 className="heading-2 text-[#1C1C1A] mb-8">Input Referral Baru</h2>
         <div className="max-w-md">
           <DeveloperActions partners={partners} /> {/* Only referral part will be used */}
         </div>

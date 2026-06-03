@@ -33,7 +33,7 @@ export default function PartnerAdminTools({ partner }: { partner: { id: string, 
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success(`Mitra ${partner.is_active ? 'dinonaktifkan' : 'diaktifkan'}.`);
+      toast.success(`Partner ${partner.is_active ? 'dinonaktifkan' : 'diaktifkan'}.`);
     }
     setLoading(false);
   };
@@ -56,7 +56,7 @@ export default function PartnerAdminTools({ partner }: { partner: { id: string, 
               ? 'text-[#4A7356] hover:bg-[#4A7356]/10' 
               : 'text-[#B94A48] hover:bg-[#B94A48]/10'
           }`}
-          title={partner.is_active ? "Nonaktifkan Mitra" : "Aktifkan Mitra"}
+          title={partner.is_active ? "Nonaktifkan Partner" : "Aktifkan Partner"}
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : (partner.is_active ? <ShieldCheck size={16} /> : <ShieldAlert size={16} />)}
         </button>
@@ -67,7 +67,7 @@ export default function PartnerAdminTools({ partner }: { partner: { id: string, 
           <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="heading-3 text-[#1C1C1A]">Reset Password</h2>
-              <p className="text-xs text-[#738276] mt-1">Mitra: {partner.full_name}</p>
+              <p className="text-xs text-[#738276] mt-1">Partner: {partner.full_name}</p>
             </div>
             <button type="button" onClick={() => dialogRef.current?.close()} className="text-[#738276] hover:text-[#1C1C1A]">
               <X size={20} />

@@ -37,7 +37,7 @@ export default function ReferralEditor({ referral, partners }: {
       setError(result.error);
       toast.error(result.error);
     } else {
-      toast.success('Data rujukan berhasil diperbarui.');
+      toast.success('Data referral berhasil diperbarui.');
       dialogRef.current?.close();
     }
     setLoading(false);
@@ -50,7 +50,7 @@ export default function ReferralEditor({ referral, partners }: {
       <button 
         onClick={() => dialogRef.current?.showModal()}
         className="p-2 text-[#738276] hover:text-[#1C1C1A] hover:bg-[#F5F5F2] rounded-full transition-all"
-        title="Edit Data Rujukan"
+        title="Edit Data Referral"
       >
         <Edit3 size={14} />
       </button>
@@ -58,7 +58,7 @@ export default function ReferralEditor({ referral, partners }: {
       <dialog ref={dialogRef} className="p-0 rounded-2xl bg-white backdrop:bg-black/50 w-full max-w-md m-auto border border-[#E8E8E4] shadow-xl">
         <div className="p-6 text-left">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="heading-3 text-[#1C1C1A]">Koreksi Data Rujukan</h2>
+            <h2 className="heading-3 text-[#1C1C1A]">Koreksi Data Referral</h2>
             <button type="button" onClick={() => dialogRef.current?.close()} className="text-[#738276] hover:text-[#1C1C1A]">
               <X size={20} />
             </button>
@@ -68,7 +68,7 @@ export default function ReferralEditor({ referral, partners }: {
 
           <form onSubmit={handleUpdate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#4A4A48] mb-1">Mitra Referral</label>
+              <label className="block text-sm font-medium text-[#4A4A48] mb-1">Partner Referral</label>
               <select name="partner_id" defaultValue={referral.partner_id} required className="h-input w-full bg-transparent">
                 {partners.map(p => (
                   <option key={p.id} value={p.id}>{p.full_name} ({p.whatsapp})</option>

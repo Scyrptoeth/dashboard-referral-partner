@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Dashboard | Persiapantubel',
-  description: 'Ringkasan performa dan rujukan mitra Persiapantubel.',
+  description: 'Ringkasan performa dan referral partner Persiapantubel.',
 };
 
 export default async function DashboardPage() {

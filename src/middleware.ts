@@ -87,7 +87,7 @@ export async function middleware(request: NextRequest) {
       return redirectToLogin(request);
     }
 
-    // 2. Verifikasi profil dari database dengan rujukan ID yang valid
+    // 2. Verifikasi profil dari database dengan referral ID yang valid
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
