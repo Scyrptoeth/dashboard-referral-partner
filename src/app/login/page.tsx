@@ -43,8 +43,8 @@ function LoginContent() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-[400px]">
         <div className="mb-12 text-center">
-          <h1 className="heading-2 text-[#1C1C1A] mb-3">Selamat datang.</h1>
-          <p className="text-[#738276] text-sm">Masuk ke portal kemitraan Kamu.</p>
+          <h1 className="heading-2 text-[#1C1C1A] mb-3">Selamat Datang!</h1>
+          <p className="text-[#738276] text-sm">Terimakasih telah bergabung menjadi Partner Persiapantubel</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
@@ -107,7 +107,7 @@ function LoginContent() {
         </form>
 
         <p className="mt-12 text-center text-xs text-[#738276]">
-          Mengalami kendala? Silakan hubungi admin Persiapantubel.
+          Mengalami Kendala? Silakan Menghubungi Admin Persiapantubel, ya!
         </p>
       </div>
     </div>
